@@ -1,0 +1,30 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Lumphini-style Park", "type": "urban_park" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[100.47,13.72],[100.50,13.72],[100.50,13.75],[100.47,13.75],[100.47,13.72]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Chatuchak-style Park", "type": "metropolitan_park" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[100.55,13.73],[100.59,13.73],[100.59,13.77],[100.55,13.77],[100.55,13.73]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Riverside Green Belt", "type": "green_belt" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[100.66,13.80],[100.69,13.80],[100.69,13.83],[100.66,13.83],[100.66,13.80]]]
+      }
+    }
+  ]
+}
+

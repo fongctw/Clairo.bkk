@@ -1,0 +1,25 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "bma",
+        "name": "Bangkok Metropolitan Area"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [100.32, 13.62],
+            [100.85, 13.62],
+            [100.85, 13.98],
+            [100.32, 13.98],
+            [100.32, 13.62]
+          ]
+        ]
+      }
+    }
+  ]
+}
+

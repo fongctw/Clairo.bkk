@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: green-clean-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env.example
+    volumes:
+      - ./backend:/app
+      - ./data:/data
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: green-clean-frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env.example
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - backend
+    command: npm run dev -- --hostname 0.0.0.0 --port 3000
+
+volumes:
+  frontend_node_modules:

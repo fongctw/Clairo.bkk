@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Industrial Cluster A", "category": "industry" },
+      "geometry": { "type": "Point", "coordinates": [100.61, 13.70] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Major Traffic Corridor", "category": "traffic" },
+      "geometry": { "type": "Point", "coordinates": [100.72, 13.76] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Industrial Cluster B", "category": "industry" },
+      "geometry": { "type": "Point", "coordinates": [100.45, 13.84] }
+    }
+  ]
+}
+
