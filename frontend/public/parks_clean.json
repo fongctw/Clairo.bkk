@@ -1,0 +1,2049 @@
+[
+  {
+    "id": 2649,
+    "name": "สวนหลวงพระราม 8",
+    "slug": "suan-luang-phra-ram-8",
+    "link": "https://greener.bangkok.go.th/park/suan-luang-phra-ram-8/",
+    "district": {
+      "id": 71,
+      "name": "เขตบางพลัด",
+      "slug": "khet-bang-phlat"
+    },
+    "categories": [
+      {
+        "id": 36,
+        "name": "ฟิตเนส",
+        "slug": "fitness"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 33,
+        "name": "รองรับผู้สูงอายุและผู้พิการ",
+        "slug": "accommodates-the-elderly-and-disabled"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/Rogeema-Kenny-2-scaled.jpeg"
+  },
+  {
+    "id": 2646,
+    "name": "สวนหลวง ร.๙",
+    "slug": "suan-luang-r-9",
+    "link": "https://greener.bangkok.go.th/park/suan-luang-r-9/",
+    "district": {
+      "id": 78,
+      "name": "เขตประเวศ",
+      "slug": "khet-prawet"
+    },
+    "categories": [
+      {
+        "id": 116,
+        "name": "นั่งเรือปั่นเป็ด",
+        "slug": "pedal-boating"
+      },
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_1508.jpg"
+  },
+  {
+    "id": 2645,
+    "name": "สวนสาธารณะศูนย์กีฬาบึงหนองบอน",
+    "slug": "suan-satharana-sun-gi-la-bueng-nong-bon",
+    "link": "https://greener.bangkok.go.th/park/suan-satharana-sun-gi-la-bueng-nong-bon/",
+    "district": {
+      "id": 78,
+      "name": "เขตประเวศ",
+      "slug": "khet-prawet"
+    },
+    "categories": [
+      {
+        "id": 116,
+        "name": "นั่งเรือปั่นเป็ด",
+        "slug": "pedal-boating"
+      },
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 36,
+        "name": "ฟิตเนส",
+        "slug": "fitness"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/Autchi-JinZawa.jpg"
+  },
+  {
+    "id": 2642,
+    "name": "สวนธนบุรีรมย์",
+    "slug": "suan-thanaburirom",
+    "link": "https://greener.bangkok.go.th/park/suan-thanaburirom/",
+    "district": {
+      "id": 95,
+      "name": "เขตทุ่งครุ",
+      "slug": "khet-thung-khru"
+    },
+    "categories": [
+      {
+        "id": 36,
+        "name": "ฟิตเนส",
+        "slug": "fitness"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/Rattanawadee-Ch.jpeg"
+  },
+  {
+    "id": 2640,
+    "name": "สวนเฉลิมพระเกียรติพระบาทสมเด็จพระเจ้าอยู่หัว พระชนมพรรษา 7 รอบ",
+    "slug": "suan-chaloem-phra-kian-phra-bat-somdet-phra-jao-yu-hua-phra-chonnam-phansa-7-rop",
+    "link": "https://greener.bangkok.go.th/park/suan-chaloem-phra-kian-phra-bat-somdet-phra-jao-yu-hua-phra-chonnam-phansa-7-rop/",
+    "district": {
+      "id": 96,
+      "name": "เขตบางบอน",
+      "slug": "khet-bang-bon"
+    },
+    "categories": [
+      {
+        "id": 118,
+        "name": "บาสเก็ตบอล",
+        "slug": "basketball"
+      },
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 36,
+        "name": "ฟิตเนส",
+        "slug": "fitness"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 25,
+        "name": "สระว่ายน้ำ",
+        "slug": "swimming-pool"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/Wongwarut-Prasithipol-1.jpeg"
+  },
+  {
+    "id": 2638,
+    "name": "สวนสันติภาพ",
+    "slug": "suan-santipap",
+    "link": "https://greener.bangkok.go.th/park/suan-santipap/",
+    "district": {
+      "id": 83,
+      "name": "เขตราชเทวี",
+      "slug": "khet-ratchathewi"
+    },
+    "categories": [
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_0472.jpeg"
+  },
+  {
+    "id": 2633,
+    "name": "อุทยานเบญจสิริ",
+    "slug": "utthayan-benjasiri",
+    "link": "https://greener.bangkok.go.th/park/utthayan-benjasiri/",
+    "district": {
+      "id": 79,
+      "name": "เขตคลองเตย",
+      "slug": "khet-khlong-toei"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/jan-jan.jpeg"
+  },
+  {
+    "id": 2636,
+    "name": "สวนเฉลิมพระเกียรติ 80 พรรษา พระบาทสมเด็จพระเจ้าอยู่หัว (สาทร)",
+    "slug": "suan-chaloem-phra-kian-80-phansa-phra-bat-somdet-phra-jao-yu-hua-sathorn",
+    "link": "https://greener.bangkok.go.th/park/suan-chaloem-phra-kian-80-phansa-phra-bat-somdet-phra-jao-yu-hua-sathorn/",
+    "district": {
+      "id": 74,
+      "name": "เขตสาทร",
+      "slug": "khet-sathorn"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/สำนักงานสวนสาธารณะ.jpeg"
+  },
+  {
+    "id": 2181,
+    "name": "สวนวนธรรม",
+    "slug": "suan-won-tham",
+    "link": "https://greener.bangkok.go.th/park/suan-won-tham/",
+    "district": {
+      "id": 78,
+      "name": "เขตประเวศ",
+      "slug": "khet-prawet"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_1834.jpg"
+  },
+  {
+    "id": 2180,
+    "name": "สวน 50 พรรษา มหาจักรีสิรินธร",
+    "slug": "suan-50-phansa-mahachakri-sirindhorn",
+    "link": "https://greener.bangkok.go.th/park/suan-50-phansa-mahachakri-sirindhorn/",
+    "district": {
+      "id": 78,
+      "name": "เขตประเวศ",
+      "slug": "khet-prawet"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/20240512_110915.jpg"
+  },
+  {
+    "id": 2179,
+    "name": "สวนบางแคภิรมย์",
+    "slug": "suan-bangkae-phiroam",
+    "link": "https://greener.bangkok.go.th/park/suan-bangkae-phiroam/",
+    "district": {
+      "id": 86,
+      "name": "เขตบางแค",
+      "slug": "khet-bang-khae"
+    },
+    "categories": [
+      {
+        "id": 118,
+        "name": "บาสเก็ตบอล",
+        "slug": "basketball"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/hin-sabay.jpeg"
+  },
+  {
+    "id": 2177,
+    "name": "สวนป่าประชานิเวศน์ (หมู่บ้านประชานิเวศน์)",
+    "slug": "suan-pa-prachaniwet-mubaan-prachaniwet",
+    "link": "https://greener.bangkok.go.th/park/suan-pa-prachaniwet-mubaan-prachaniwet/",
+    "district": {
+      "id": 76,
+      "name": "เขตจตุจักร",
+      "slug": "khet-chattuchak"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/Michael-Isaac.jpeg"
+  },
+  {
+    "id": 2176,
+    "name": "สนามหลวง",
+    "slug": "sanam-luang",
+    "link": "https://greener.bangkok.go.th/park/sanam-luang/",
+    "district": {
+      "id": 47,
+      "name": "เขตพระนคร",
+      "slug": "khet-phra-nakhon"
+    },
+    "categories": [
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/Anupong-P.-Sophon.jpeg"
+  },
+  {
+    "id": 1956,
+    "name": "สวนวชิรเบญจทัศ (สวนรถไฟ)",
+    "slug": "suan-wachirabenjathat-suan-rotfai",
+    "link": "https://greener.bangkok.go.th/park/suan-wachirabenjathat-suan-rotfai/",
+    "district": {
+      "id": 76,
+      "name": "เขตจตุจักร",
+      "slug": "khet-chattuchak"
+    },
+    "categories": [
+      {
+        "id": 116,
+        "name": "นั่งเรือปั่นเป็ด",
+        "slug": "pedal-boating"
+      },
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 36,
+        "name": "ฟิตเนส",
+        "slug": "fitness"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 25,
+        "name": "สระว่ายน้ำ",
+        "slug": "swimming-pool"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/DSC02315.jpg"
+  },
+  {
+    "id": 1959,
+    "name": "สวนเทียนทะเลพัฒนาพฤกษาภิรมย์",
+    "slug": "suan-tian-thale-pattana-phrueksa-phiroam",
+    "link": "https://greener.bangkok.go.th/park/suan-tian-thale-pattana-phrueksa-phiroam/",
+    "district": {
+      "id": 67,
+      "name": "เขตบางขุนเทียน",
+      "slug": "khet-bang-khun-thian"
+    },
+    "categories": [
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/greenerbkk-4-scaled.jpg"
+  },
+  {
+    "id": 1958,
+    "name": "สวนรมณีย์ทุ่งสีกัน",
+    "slug": "suan-romanee-thung-seekan",
+    "link": "https://greener.bangkok.go.th/park/suan-romanee-thung-seekan/",
+    "district": {
+      "id": 82,
+      "name": "เขตดอนเมือง",
+      "slug": "khet-don-muang"
+    },
+    "categories": [
+      {
+        "id": 36,
+        "name": "ฟิตเนส",
+        "slug": "fitness"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_8116-scaled.jpeg"
+  },
+  {
+    "id": 1957,
+    "name": "สวนกีฬารามอินทรา",
+    "slug": "suan-gi-la-ram-inthra",
+    "link": "https://greener.bangkok.go.th/park/suan-gi-la-ram-inthra/",
+    "district": {
+      "id": 51,
+      "name": "เขตบางเขน",
+      "slug": "khet-bang-khen"
+    },
+    "categories": [
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 33,
+        "name": "รองรับผู้สูงอายุและผู้พิการ",
+        "slug": "accommodates-the-elderly-and-disabled"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_8239-scaled.jpeg"
+  },
+  {
+    "id": 1955,
+    "name": "สวนรมณีนาถ",
+    "slug": "suan-romanee-nat",
+    "link": "https://greener.bangkok.go.th/park/suan-romanee-nat/",
+    "district": {
+      "id": 47,
+      "name": "เขตพระนคร",
+      "slug": "khet-phra-nakhon"
+    },
+    "categories": [
+      {
+        "id": 118,
+        "name": "บาสเก็ตบอล",
+        "slug": "basketball"
+      },
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 36,
+        "name": "ฟิตเนส",
+        "slug": "fitness"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_0906-scaled.jpg"
+  },
+  {
+    "id": 1954,
+    "name": "สวนเสรีไทย",
+    "slug": "suan-serithai",
+    "link": "https://greener.bangkok.go.th/park/suan-serithai/",
+    "district": {
+      "id": 73,
+      "name": "เขตบึงกุ่ม",
+      "slug": "khet-bueng-kum"
+    },
+    "categories": [
+      {
+        "id": 118,
+        "name": "บาสเก็ตบอล",
+        "slug": "basketball"
+      },
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 33,
+        "name": "รองรับผู้สูงอายุและผู้พิการ",
+        "slug": "accommodates-the-elderly-and-disabled"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_8598-scaled.jpeg"
+  },
+  {
+    "id": 1914,
+    "name": "สวนสราญรมย์",
+    "slug": "suan-saran-rom",
+    "link": "https://greener.bangkok.go.th/park/suan-saran-rom/",
+    "district": {
+      "id": 47,
+      "name": "เขตพระนคร",
+      "slug": "khet-phra-nakhon"
+    },
+    "categories": [
+      {
+        "id": 118,
+        "name": "บาสเก็ตบอล",
+        "slug": "basketball"
+      },
+      {
+        "id": 36,
+        "name": "ฟิตเนส",
+        "slug": "fitness"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 117,
+        "name": "แบตมินตัน",
+        "slug": "badminton"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_0964-scaled.jpg"
+  },
+  {
+    "id": 1898,
+    "name": "สวนจตุจักร",
+    "slug": "suan-chatuchak",
+    "link": "https://greener.bangkok.go.th/park/suan-chatuchak/",
+    "district": {
+      "id": 76,
+      "name": "เขตจตุจักร",
+      "slug": "khet-chattuchak"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_0730-scaled.jpeg"
+  },
+  {
+    "id": 1880,
+    "name": "สวนป่าทางต่างระดับรัชดาภิเษก-วิภาวดีรังสิต",
+    "slug": "suan-pa-thang-tang-radap-ratchadapisek-wipavadi-rangsit",
+    "link": "https://greener.bangkok.go.th/park/suan-pa-thang-tang-radap-ratchadapisek-wipavadi-rangsit/",
+    "district": {
+      "id": 76,
+      "name": "เขตจตุจักร",
+      "slug": "khet-chattuchak"
+    },
+    "categories": [
+      {
+        "id": 118,
+        "name": "บาสเก็ตบอล",
+        "slug": "basketball"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_0239-scaled.jpeg"
+  },
+  {
+    "id": 1862,
+    "name": "สวนจรัญภิรมย์",
+    "slug": "suan-charanphiroam",
+    "link": "https://greener.bangkok.go.th/park/suan-charanphiroam/",
+    "district": {
+      "id": 71,
+      "name": "เขตบางพลัด",
+      "slug": "khet-bang-phlat"
+    },
+    "categories": [
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_4390-scaled.jpeg"
+  },
+  {
+    "id": 1821,
+    "name": "สวนป่าวิภาวดีรังสิต",
+    "slug": "suan-pa-wipavadi-rangsit",
+    "link": "https://greener.bangkok.go.th/park/suan-pa-wipavadi-rangsit/",
+    "district": {
+      "id": 72,
+      "name": "เขตดินแดง",
+      "slug": "khet-din-daeng"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_0280-scaled.jpeg"
+  },
+  {
+    "id": 1783,
+    "name": "สวนเฉลิมพระเกียรติ 80 พรรษา พระบาทสมเด็จพระเจ้าอยู่หัว (บางกอกน้อย)",
+    "slug": "suan-chaloem-phra-kian-80-phansa-phra-bat-somdet-phra-jao-yu-hua-bangkok-noi",
+    "link": "https://greener.bangkok.go.th/park/suan-chaloem-phra-kian-80-phansa-phra-bat-somdet-phra-jao-yu-hua-bangkok-noi/",
+    "district": {
+      "id": 66,
+      "name": "เขตบางกอกน้อย",
+      "slug": "khet-bang-kok-noi"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_4440-scaled.jpeg"
+  },
+  {
+    "id": 1748,
+    "name": "สวนสมเด็จพระนางเจ้าสิริกิติ์ฯ",
+    "slug": "suan-somdet-phranangchao-sirikit",
+    "link": "https://greener.bangkok.go.th/park/suan-somdet-phranangchao-sirikit/",
+    "district": {
+      "id": 76,
+      "name": "เขตจตุจักร",
+      "slug": "khet-chattuchak"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 33,
+        "name": "รองรับผู้สูงอายุและผู้พิการ",
+        "slug": "accommodates-the-elderly-and-disabled"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/DSC02504.jpg"
+  },
+  {
+    "id": 1747,
+    "name": "สวนลุมพินี",
+    "slug": "suan-lumpini",
+    "link": "https://greener.bangkok.go.th/park/suan-lumpini/",
+    "district": {
+      "id": 53,
+      "name": "เขตปทุมวัน",
+      "slug": "khet-pathum-wan"
+    },
+    "categories": [
+      {
+        "id": 116,
+        "name": "นั่งเรือปั่นเป็ด",
+        "slug": "pedal-boating"
+      },
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/DSC01062-scaled.jpg"
+  },
+  {
+    "id": 1697,
+    "name": "สวนเบญจกิติ",
+    "slug": "benjakitti-park",
+    "link": "https://greener.bangkok.go.th/park/benjakitti-park/",
+    "district": {
+      "id": 79,
+      "name": "เขตคลองเตย",
+      "slug": "khet-khlong-toei"
+    },
+    "categories": [
+      {
+        "id": 116,
+        "name": "นั่งเรือปั่นเป็ด",
+        "slug": "pedal-boating"
+      },
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 33,
+        "name": "รองรับผู้สูงอายุและผู้พิการ",
+        "slug": "accommodates-the-elderly-and-disabled"
+      },
+      {
+        "id": 221,
+        "name": "ลานสเกตบอร์ด",
+        "slug": "%e0%b8%a5%e0%b8%b2%e0%b8%99%e0%b8%aa%e0%b9%80%e0%b8%81%e0%b8%95%e0%b8%9a%e0%b8%ad%e0%b8%a3%e0%b9%8c%e0%b8%94"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/DSC01527-scaled.jpg"
+  },
+  {
+    "id": 1676,
+    "name": "สวนสิรินธราพฤกษาพรรณ",
+    "slug": "suan-sirindhorn-phreuksapan",
+    "link": "https://greener.bangkok.go.th/park/suan-sirindhorn-phreuksapan/",
+    "district": {
+      "id": 66,
+      "name": "เขตบางกอกน้อย",
+      "slug": "khet-bang-kok-noi"
+    },
+    "categories": [],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_4344-scaled.jpeg"
+  },
+  {
+    "id": 1658,
+    "name": "สวนนวมินทร์ภิรมย์",
+    "slug": "suan-nawamin-phiroam",
+    "link": "https://greener.bangkok.go.th/park/suan-nawamin-phiroam/",
+    "district": {
+      "id": 73,
+      "name": "เขตบึงกุ่ม",
+      "slug": "khet-bueng-kum"
+    },
+    "categories": [
+      {
+        "id": 118,
+        "name": "บาสเก็ตบอล",
+        "slug": "basketball"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_8651-scaled.jpeg"
+  },
+  {
+    "id": 1644,
+    "name": "สวนบึงกระเทียม",
+    "slug": "suan-buengkratiem",
+    "link": "https://greener.bangkok.go.th/park/suan-buengkratiem/",
+    "district": {
+      "id": 56,
+      "name": "เขตมีนบุรี",
+      "slug": "khet-min-buri"
+    },
+    "categories": [
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_8503-scaled.jpeg"
+  },
+  {
+    "id": 1629,
+    "name": "สวนสาธารณะทางต่างระดับถนนพรานนก",
+    "slug": "suan-satharana-thang-tang-radap-thanon-phran-nok",
+    "link": "https://greener.bangkok.go.th/park/suan-satharana-thang-tang-radap-thanon-phran-nok/",
+    "district": {
+      "id": 94,
+      "name": "เขตทวีวัฒนา",
+      "slug": "khet-thawee-watthana"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_3946-scaled.jpeg"
+  },
+  {
+    "id": 1611,
+    "name": "สวนปิยะภิรมย์",
+    "slug": "suan-piya-phiroam",
+    "link": "https://greener.bangkok.go.th/park/suan-piya-phiroam/",
+    "district": {
+      "id": 52,
+      "name": "เขตบางกะปิ",
+      "slug": "khet-bang-kapi"
+    },
+    "categories": [
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_8680-scaled.jpeg"
+  },
+  {
+    "id": 1565,
+    "name": "สวนวัชราภิรมย์",
+    "slug": "suan-watchara-phiroam",
+    "link": "https://greener.bangkok.go.th/park/suan-watchara-phiroam/",
+    "district": {
+      "id": 51,
+      "name": "เขตบางเขน",
+      "slug": "khet-bang-khen"
+    },
+    "categories": [
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      },
+      {
+        "id": 117,
+        "name": "แบตมินตัน",
+        "slug": "badminton"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_8349-scaled.jpeg"
+  },
+  {
+    "id": 1510,
+    "name": "สวนสาธารณะบึงน้ำลาดพร้าว 71",
+    "slug": "suan-satharana-bueng-nam-ladphrao-71",
+    "link": "https://greener.bangkok.go.th/park/suan-satharana-bueng-nam-ladphrao-71/",
+    "district": {
+      "id": 84,
+      "name": "เขตลาดพร้าว",
+      "slug": "khet-lat-phrao"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_0121-scaled.jpeg"
+  },
+  {
+    "id": 1487,
+    "name": "สวนพระนคร",
+    "slug": "suan-pranakorn",
+    "link": "https://greener.bangkok.go.th/park/suan-pranakorn/",
+    "district": {
+      "id": 57,
+      "name": "เขตลาดกระบัง",
+      "slug": "khet-lat-krabang"
+    },
+    "categories": [
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 25,
+        "name": "สระว่ายน้ำ",
+        "slug": "swimming-pool"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/park13-10.jpg"
+  },
+  {
+    "id": 1263,
+    "name": "สวนพระยาภิรมย์",
+    "slug": "suan-praya-phiroam",
+    "link": "https://greener.bangkok.go.th/park/suan-praya-phiroam/",
+    "district": {
+      "id": 56,
+      "name": "เขตมีนบุรี",
+      "slug": "khet-min-buri"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_8410-scaled.jpeg"
+  },
+  {
+    "id": 1237,
+    "name": "สวนวารีภิรมย์",
+    "slug": "suan-wari-phiroam",
+    "link": "https://greener.bangkok.go.th/park/suan-wari-phiroam/",
+    "district": {
+      "id": 177,
+      "name": "เขตคลองสามวา",
+      "slug": "%e0%b9%80%e0%b8%82%e0%b8%95%e0%b8%84%e0%b8%a5%e0%b8%ad%e0%b8%87%e0%b8%aa%e0%b8%b2%e0%b8%a1%e0%b8%a7%e0%b8%b2"
+    },
+    "categories": [
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_8459-scaled.jpeg"
+  },
+  {
+    "id": 1219,
+    "name": "สวนสิริภิรมย์ (บึงลำไผ่)",
+    "slug": "suan-siri-phiroam-bueng-lam-phai",
+    "link": "https://greener.bangkok.go.th/park/suan-siri-phiroam-bueng-lam-phai/",
+    "district": {
+      "id": 177,
+      "name": "เขตคลองสามวา",
+      "slug": "%e0%b9%80%e0%b8%82%e0%b8%95%e0%b8%84%e0%b8%a5%e0%b8%ad%e0%b8%87%e0%b8%aa%e0%b8%b2%e0%b8%a1%e0%b8%a7%e0%b8%b2"
+    },
+    "categories": [
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_8488-scaled.jpeg"
+  },
+  {
+    "id": 1206,
+    "name": "สวนทวีกาญจนาภิเษก",
+    "slug": "suan-tawe-kanchanaphisek",
+    "link": "https://greener.bangkok.go.th/park/suan-tawe-kanchanaphisek/",
+    "district": {
+      "id": 94,
+      "name": "เขตทวีวัฒนา",
+      "slug": "khet-thawee-watthana"
+    },
+    "categories": [
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 120,
+        "name": "ลู่วิ่ง",
+        "slug": "treadmill"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_3963-scaled.jpeg"
+  },
+  {
+    "id": 1172,
+    "name": "สวนทวีวนารมย์",
+    "slug": "suan-tavee-wanarom",
+    "link": "https://greener.bangkok.go.th/park/suan-tavee-wanarom/",
+    "district": {
+      "id": 94,
+      "name": "เขตทวีวัฒนา",
+      "slug": "khet-thawee-watthana"
+    },
+    "categories": [
+      {
+        "id": 118,
+        "name": "บาสเก็ตบอล",
+        "slug": "basketball"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_3989-scaled.jpeg"
+  },
+  {
+    "id": 1146,
+    "name": "สวน 60 พรรษา สมเด็จพระบรมราชินีนาถ",
+    "slug": "suan-60-phansa-somdet-phranangchao-phra-borommarachininat",
+    "link": "https://greener.bangkok.go.th/park/suan-60-phansa-somdet-phranangchao-phra-borommarachininat/",
+    "district": {
+      "id": 57,
+      "name": "เขตลาดกระบัง",
+      "slug": "khet-lat-krabang"
+    },
+    "categories": [
+      {
+        "id": 118,
+        "name": "บาสเก็ตบอล",
+        "slug": "basketball"
+      },
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_0209-scaled.jpeg"
+  },
+  {
+    "id": 1128,
+    "name": "สวนสมเด็จย่า 84",
+    "slug": "suan-somdet-ya-84",
+    "link": "https://greener.bangkok.go.th/park/suan-somdet-ya-84/",
+    "district": {
+      "id": 76,
+      "name": "เขตจตุจักร",
+      "slug": "khet-chattuchak"
+    },
+    "categories": [
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/05/IMG_0596-scaled.jpeg"
+  },
+  {
+    "id": 1074,
+    "name": "สวนป้อมมหากาฬ",
+    "slug": "suan-pom-mahakala",
+    "link": "https://greener.bangkok.go.th/park/suan-pom-mahakala/",
+    "district": {
+      "id": 47,
+      "name": "เขตพระนคร",
+      "slug": "khet-phra-nakhon"
+    },
+    "categories": [
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      },
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/04/IMG_0937-scaled.jpg"
+  },
+  {
+    "id": 1029,
+    "name": "ลานคนเมือง ศาลาว่าการกรุงเทพมหานคร",
+    "slug": "lan-kon-mueang-bkk",
+    "link": "https://greener.bangkok.go.th/park/lan-kon-mueang-bkk/",
+    "district": {
+      "id": 47,
+      "name": "เขตพระนคร",
+      "slug": "khet-phra-nakhon"
+    },
+    "categories": [
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/04/IMG_0915-scaled.jpg"
+  },
+  {
+    "id": 899,
+    "name": "สวนลอยฟ้าเจ้าพระยา",
+    "slug": "suan-loi-fa-jao-phaya",
+    "link": "https://greener.bangkok.go.th/park/suan-loi-fa-jao-phaya/",
+    "district": {
+      "id": 47,
+      "name": "เขตพระนคร",
+      "slug": "khet-phra-nakhon"
+    },
+    "categories": [
+      {
+        "id": 35,
+        "name": "ปั่นจักรยาน",
+        "slug": "cycling"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 33,
+        "name": "รองรับผู้สูงอายุและผู้พิการ",
+        "slug": "accommodates-the-elderly-and-disabled"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/04/IMG_1009-scaled.jpg"
+  },
+  {
+    "id": 861,
+    "name": "สวนจากภูผาสู่มหานที",
+    "slug": "suan-jak-phu-pha-su-mahanatee",
+    "link": "https://greener.bangkok.go.th/park/suan-jak-phu-pha-su-mahanatee/",
+    "district": {
+      "id": 76,
+      "name": "เขตจตุจักร",
+      "slug": "khet-chattuchak"
+    },
+    "categories": [
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 31,
+        "name": "รถเมล์",
+        "slug": "bus"
+      },
+      {
+        "id": 29,
+        "name": "รถไฟฟ้า",
+        "slug": "merto-skytrain"
+      },
+      {
+        "id": 33,
+        "name": "รองรับผู้สูงอายุและผู้พิการ",
+        "slug": "accommodates-the-elderly-and-disabled"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      }
+    ],
+    "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/04/IMG_0659-scaled.jpeg"
+  }
+]

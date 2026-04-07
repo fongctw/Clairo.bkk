@@ -222,9 +222,11 @@ export interface BMAPark {
   id: number
   slug: string
   nameTh: string
+  link: string
   image: string | null
   categories: BMACategory[]
   districtId: number | null
+  districtName: string
 }
 
 // District ID → Thai name mapping (from /wp-json/wp/v2/district)
@@ -239,11 +241,7 @@ const DISTRICT_NAMES: Record<number, string> = {
 
 export const fetchBMAParks = async (): Promise<BMAPark[]> => {
   try {
-    // Fetch all pages (WP API max 100 per page)
-    const res = await fetch(
-      'https://greener.bangkok.go.th/wp-json/wp/v2/park?per_page=100&_embed=true&_fields=id,slug,title,featured_media,district,park-categorie,_links,_embedded',
-      { next: { revalidate: 86400 } } as RequestInit
-    )
+    const res = await fetch('/parks_clean.json')
     if (!res.ok) return []
     const data = await res.json()
     if (!Array.isArray(data)) return []
@@ -251,21 +249,22 @@ export const fetchBMAParks = async (): Promise<BMAPark[]> => {
     return data.map((p: {
       id: number
       slug: string
-      title: { rendered: string }
-      district: number[]
-      'park-categorie': number[]
-      _embedded?: {
-        'wp:featuredmedia'?: { source_url?: string }[]
-      }
+      name: string
+      link: string
+      district: { id: number; name: string; slug: string }
+      categories: { id: number; name: string; slug: string }[]
+      image: string
     }) => ({
       id: p.id,
       slug: p.slug,
-      nameTh: p.title?.rendered ?? '',
-      image: p._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? null,
-      categories: (p['park-categorie'] ?? [])
-        .map((id: number) => BMA_CATEGORIES[id])
+      nameTh: p.name ?? '',
+      link: p.link ?? '',
+      image: p.image ?? null,
+      categories: (p.categories ?? [])
+        .map((c) => BMA_CATEGORIES[c.id])
         .filter(Boolean),
-      districtId: p.district?.[0] ?? null,
+      districtId: p.district?.id ?? null,
+      districtName: p.district?.name ?? '',
     }))
   } catch {
     return []
@@ -292,6 +291,7 @@ export interface EnrichedPark {
   image: string | null
   categories: BMACategory[]
   district: string
+  link: string
   // Geometry (from GeoJSON)
   centroid: [number, number] | null
   polygon: GeoJSON.Feature | null
@@ -353,7 +353,8 @@ export const fetchEnrichedParks = async (): Promise<EnrichedPark[]> => {
         openHours: meta?.openHours ?? '',
         image: bma.image,
         categories: bma.categories,
-        district: bma.districtId ? (DISTRICT_NAMES[bma.districtId] ?? '') : '',
+        district: bma.districtName || (bma.districtId ? (DISTRICT_NAMES[bma.districtId] ?? '') : ''),
+        link: bma.link,
         centroid,
         polygon: matched,
       }

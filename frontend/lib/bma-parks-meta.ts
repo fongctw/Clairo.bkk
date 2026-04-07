@@ -188,8 +188,8 @@ export const BMA_PARKS_META: ParkMeta[] = [
     openHours: "",
   },
   {
-    slug: "suan-sirindhorn-phrueksapan",
-    nameTh: "สวนสิรินธรพฤกษ์พาน",
+    slug: "suan-sirindhorn-phreuksapan",
+    nameTh: "สวนสิรินธราพฤกษาพรรณ",
     nameEn: "Sirindhorn Phrueksa Park",
     description: "",
     openHours: "",
@@ -279,7 +279,7 @@ export const BMA_PARKS_META: ParkMeta[] = [
     openHours: "",
   },
   {
-    slug: "suan-1146",
+    slug: "suan-60-phansa-somdet-phranangchao-phra-borommarachininat",
     nameTh: "สวน 60 พรรษา สมเด็จพระบรมราชินีนาถ",
     nameEn: "Queen's 60th Birthday Park",
     description: "",
@@ -294,7 +294,7 @@ export const BMA_PARKS_META: ParkMeta[] = [
   },
   {
     slug: "suan-thanaburirom",
-    nameTh: "สวนธนบุรีรม",
+    nameTh: "สวนธนบุรีรมย์",
     nameEn: "Thanaburirom Park",
     description: "",
     openHours: "",

@@ -236,9 +236,17 @@ function BMAPopupContent({ park, stations, activityMaxPm25 }: BMAPopupProps) {
 
       {/* Directions */}
       <a href={gmapsUrl} target="_blank" rel="noopener noreferrer"
-        style={{ display: "block", background: "#2563eb", color: "white", borderRadius: 10, padding: "8px 12px", textAlign: "center", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+        style={{ display: "block", background: "#2563eb", color: "white", borderRadius: 10, padding: "8px 12px", textAlign: "center", fontSize: 13, fontWeight: 600, textDecoration: "none", marginBottom: 6 }}>
         🗺️ Get directions
       </a>
+
+      {/* BMA park page */}
+      {park.link && (
+        <a href={park.link} target="_blank" rel="noopener noreferrer"
+          style={{ display: "block", background: "#f0fdf4", border: "1px solid #bbf7d0", color: "#15803d", borderRadius: 10, padding: "7px 12px", textAlign: "center", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>
+          🌿 View on Greener Bangkok
+        </a>
+      )}
     </div>
   );
 }
@@ -248,6 +256,7 @@ function BMAPopupContent({ park, stations, activityMaxPm25 }: BMAPopupProps) {
 export interface MapViewProps {
   userCoords: [number, number] | null;
   enrichedParks: EnrichedPark[];
+  visibleParkIds: Set<number> | null;
   stations: Pm25Station[];
   bufferKm: number;
   sensorBufferKm: number;
@@ -270,7 +279,7 @@ function FlyTo({ coords }: { coords: [number, number] }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function MapView({ userCoords, enrichedParks, stations, bufferKm, sensorBufferKm, basemap, showSensorBuffers, flyToCoords, userPm25, activityMaxPm25 }: MapViewProps) {
+export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, bufferKm, sensorBufferKm, basemap, showSensorBuffers, flyToCoords, userPm25, activityMaxPm25 }: MapViewProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [droppedPin, setDroppedPin] = useState<[number, number] | null>(null);
   const [droppedPinSafety, setDroppedPinSafety] = useState<SafetyInfo | null>(null);
@@ -303,7 +312,7 @@ export function MapView({ userCoords, enrichedParks, stations, bufferKm, sensorB
   }
 
   if (!isMounted) {
-    return <div style={{ height: 680, borderRadius: 24, background: "#e8f0eb" }} />;
+    return <div style={{ height: "100%", minHeight: 480, borderRadius: 24, background: "#e8f0eb" }} />;
   }
 
   const tile = TILES[basemap];
@@ -315,7 +324,7 @@ export function MapView({ userCoords, enrichedParks, stations, bufferKm, sensorB
       minZoom={10}
       maxZoom={18}
       scrollWheelZoom
-      style={{ height: 680, width: "100%", borderRadius: 24 }}
+      style={{ height: "100%", minHeight: 480, width: "100%", borderRadius: 24 }}
     >
       {userCoords && <FlyToUser coords={userCoords} />}
       {flyToCoords && <FlyTo coords={flyToCoords} />}
@@ -325,9 +334,10 @@ export function MapView({ userCoords, enrichedParks, stations, bufferKm, sensorB
 
       {/* BMA park polygon fills — only matched OSM polygons */}
       {enrichedParks.length > 0 && (() => {
+        const visible = enrichedParks.filter((ep) => !visibleParkIds || visibleParkIds.has(ep.id));
         const bmaPolygons: GeoJSON.FeatureCollection = {
           type: "FeatureCollection",
-          features: enrichedParks
+          features: visible
             .filter((ep) => ep.polygon !== null && (ep.polygon!.geometry.type === "Polygon" || ep.polygon!.geometry.type === "MultiPolygon"))
             .map((ep) => ep.polygon!),
         };
@@ -347,9 +357,10 @@ export function MapView({ userCoords, enrichedParks, stations, bufferKm, sensorB
         );
       })()}
 
-      {/* BMA park markers — 47 official parks only */}
+      {/* BMA park markers — filtered by active filters */}
       {enrichedParks.map((ep) => {
         if (!ep.centroid) return null;
+        if (visibleParkIds && !visibleParkIds.has(ep.id)) return null;
         const safe = activityMaxPm25 === null || userPm25 === null || userPm25 <= activityMaxPm25;
         return (
           <Marker key={`bma-${ep.id}`} position={ep.centroid} icon={safe ? parkIcon : warnParkIcon}>

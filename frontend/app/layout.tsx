@@ -21,9 +21,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/map" className="rounded-full px-3 py-1.5 text-sm font-semibold text-ink/60 hover:bg-mist hover:text-ink transition">
                 Map
               </Link>
-              <Link href="/parks" className="rounded-full px-3 py-1.5 text-sm font-semibold text-ink/60 hover:bg-mist hover:text-ink transition">
-                🏃 Running Parks
-              </Link>
             </nav>
           </header>
           {children}
