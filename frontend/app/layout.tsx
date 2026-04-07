@@ -4,30 +4,26 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Green & Clean Bangkok Finder",
-  description: "Spatial suitability analysis for relatively green and lower-pollution areas in Bangkok."
+  title: "Clairo.bkk — Bangkok Green Space Finder",
+  description: "Find safe, clean public parks near you in Bangkok based on real-time PM2.5 air quality.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <div className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <header className="mb-8 flex flex-col gap-4 rounded-3xl border border-white/60 bg-white/85 p-6 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
-            <div>
-              <Link href="/" className="font-display text-3xl font-semibold">
-                Green &amp; Clean Bangkok Finder
+        <div className="mx-auto min-h-screen max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <header className="mb-4 flex items-center justify-between rounded-2xl border border-white/60 bg-white/85 px-5 py-3 shadow-sm backdrop-blur">
+            <Link href="/map" className="font-display text-xl font-semibold text-ink">
+              🌿 Clairo.bkk
+            </Link>
+            <nav className="flex items-center gap-1">
+              <Link href="/map" className="rounded-full px-3 py-1.5 text-sm font-semibold text-ink/60 hover:bg-mist hover:text-ink transition">
+                Map
               </Link>
-              <p className="mt-2 max-w-2xl text-sm text-ink/70">
-                A GIS suitability analysis app for locating relatively greener and lower-pollution areas in Bangkok and nearby provinces.
-              </p>
-            </div>
-            <nav className="flex flex-wrap gap-3 text-sm font-medium">
-              <Link href="/" className="rounded-full bg-mist px-4 py-2">Home</Link>
-              <Link href="/map" className="rounded-full bg-mist px-4 py-2">Map</Link>
-              <Link href="/results" className="rounded-full bg-mist px-4 py-2">Results</Link>
-              <Link href="/methodology" className="rounded-full bg-mist px-4 py-2">Methodology</Link>
-              <Link href="/about" className="rounded-full bg-mist px-4 py-2">About</Link>
+              <Link href="/parks" className="rounded-full px-3 py-1.5 text-sm font-semibold text-ink/60 hover:bg-mist hover:text-ink transition">
+                🏃 Running Parks
+              </Link>
             </nav>
           </header>
           {children}
@@ -36,4 +32,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-
