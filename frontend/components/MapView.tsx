@@ -277,6 +277,59 @@ function FlyTo({ coords }: { coords: [number, number] }) {
   return null;
 }
 
+// ─── Overpass relation → GeoJSON ─────────────────────────────────────────────
+// Builds polygon features from Overpass `out geom` relation response.
+function overpassRelationsToGeoJSON(elements: any[]): GeoJSON.FeatureCollection {
+  const features: GeoJSON.Feature[] = [];
+
+  for (const el of elements) {
+    if (el.type !== "relation") continue;
+    const outerWays: { geometry: { lat: number; lon: number }[] }[] =
+      el.members?.filter((m: any) => m.type === "way" && m.role === "outer" && Array.isArray(m.geometry)) ?? [];
+    if (outerWays.length === 0) continue;
+
+    // Chain way segments end-to-end into closed rings
+    let remaining = outerWays.map((w) => w.geometry.map((p) => [p.lon, p.lat] as [number, number]));
+    const rings: [number, number][][] = [];
+
+    while (remaining.length > 0) {
+      let ring: [number, number][] = [...remaining[0]];
+      remaining = remaining.slice(1);
+      let extended = true;
+      while (extended && remaining.length > 0) {
+        extended = false;
+        const tail = ring[ring.length - 1];
+        for (let i = 0; i < remaining.length; i++) {
+          const seg = remaining[i];
+          const head = seg[0], back = seg[seg.length - 1];
+          if (Math.abs(head[0] - tail[0]) < 1e-6 && Math.abs(head[1] - tail[1]) < 1e-6) {
+            ring = [...ring, ...seg.slice(1)]; remaining.splice(i, 1); extended = true; break;
+          }
+          if (Math.abs(back[0] - tail[0]) < 1e-6 && Math.abs(back[1] - tail[1]) < 1e-6) {
+            ring = [...ring, ...[...seg].reverse().slice(1)]; remaining.splice(i, 1); extended = true; break;
+          }
+        }
+      }
+      if (ring.length > 2) {
+        const [f, l] = [ring[0], ring[ring.length - 1]];
+        if (Math.abs(f[0] - l[0]) > 1e-7 || Math.abs(f[1] - l[1]) > 1e-7) ring.push(f);
+        rings.push(ring);
+      }
+    }
+
+    if (rings.length === 0) continue;
+    features.push({
+      type: "Feature",
+      properties: { name: el.tags?.name ?? "", nameEn: el.tags?.["name:en"] ?? "" },
+      geometry: rings.length === 1
+        ? { type: "Polygon", coordinates: rings }
+        : { type: "MultiPolygon", coordinates: rings.map((r) => [r]) },
+    });
+  }
+
+  return { type: "FeatureCollection", features };
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, bufferKm, sensorBufferKm, basemap, showSensorBuffers, flyToCoords, userPm25, activityMaxPm25 }: MapViewProps) {
@@ -286,8 +339,49 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
   const [droppedPinPm25, setDroppedPinPm25] = useState<number | null>(null);
   const [droppedPinMeta, setDroppedPinMeta] = useState<IdwResult | null>(null);
   const droppedMarkerRef = useRef<L.Marker | null>(null);
+  const [bangkokBoundary, setBangkokBoundary] = useState<GeoJSON.FeatureCollection | null>(null);
+  const [bangkokDistricts, setBangkokDistricts] = useState<GeoJSON.FeatureCollection | null>(null);
+  const [bangkokSubdistricts, setBangkokSubdistricts] = useState<GeoJSON.FeatureCollection | null>(null);
 
   useEffect(() => { setIsMounted(true); }, []);
+
+  // Bangkok province boundary — Nominatim
+  useEffect(() => {
+    fetch(
+      "https://nominatim.openstreetmap.org/search?city=Bangkok&country=Thailand&polygon_geojson=1&format=json&limit=1",
+      { headers: { "Accept-Language": "en" } }
+    )
+      .then((r) => r.json())
+      .then((data) => {
+        const geo = data?.[0]?.geojson;
+        if (geo) setBangkokBoundary({ type: "FeatureCollection", features: [{ type: "Feature", geometry: geo, properties: {} }] });
+      })
+      .catch(() => {});
+  }, []);
+
+  // Bangkok district (khet) boundaries — admin_level=8
+  useEffect(() => {
+    const q = `[out:json][timeout:60];area["name"="กรุงเทพมหานคร"]["admin_level"="4"]->.bkk;(relation["admin_level"="8"](area.bkk););out geom;`;
+    fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(q)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        const fc = overpassRelationsToGeoJSON(data.elements ?? []);
+        if (fc.features.length > 0) setBangkokDistricts(fc);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Bangkok subdistrict (khwaeng) boundaries — admin_level=9
+  useEffect(() => {
+    const q = `[out:json][timeout:90];area["name"="กรุงเทพมหานคร"]["admin_level"="4"]->.bkk;(relation["admin_level"="9"](area.bkk););out geom;`;
+    fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(q)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        const fc = overpassRelationsToGeoJSON(data.elements ?? []);
+        if (fc.features.length > 0) setBangkokSubdistricts(fc);
+      })
+      .catch(() => {});
+  }, []);
 
 
   function handlePinDrop(lat: number, lng: number) {
@@ -331,6 +425,53 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
       <PinDropHandler onDrop={handlePinDrop} />
 
       <TileLayer key={basemap} url={tile.url} attribution={tile.attribution} noWrap />
+
+      {/* ── Bangkok subdistrict (khwaeng) lines — finest grid ── */}
+      {bangkokSubdistricts && (
+        <GeoJSONLayer
+          key={`bkk-sub-${bangkokSubdistricts.features.length}`}
+          data={bangkokSubdistricts}
+          style={() => ({
+            color: "#CEA2FD",
+            weight: 0.6,
+            opacity: 1,
+            fillOpacity: 0,
+          })}
+        />
+      )}
+
+      {/* ── Bangkok district (khet) lines — medium grid ── */}
+      {bangkokDistricts && (
+        <GeoJSONLayer
+          key={`bkk-districts-${bangkokDistricts.features.length}`}
+          data={bangkokDistricts}
+          style={() => ({
+            color: "#B47EE5",
+            weight: 1.5,
+            opacity: 1,
+            fillOpacity: 0,
+            dashArray: "5 4",
+          })}
+        />
+      )}
+
+      {/* ── Bangkok province boundary — QGIS-style amber highlight ── */}
+      {bangkokBoundary && (
+        <GeoJSONLayer
+          key="bkk-boundary"
+          data={bangkokBoundary}
+          style={() => ({
+            color: "#a9c7ee",
+            weight: 3.5,
+            opacity: 1,
+            fillColor: "#7AA2C4",
+            fillOpacity: 0.3,
+            dashArray: "10 7",
+            lineCap: "round",
+            lineJoin: "round",
+          })}
+        />
+      )}
 
       {/* BMA park polygon fills — only matched OSM polygons */}
       {enrichedParks.length > 0 && (() => {

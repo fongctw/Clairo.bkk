@@ -61,8 +61,10 @@ export const fetchAirQuality = async (lat: number, lng: number): Promise<AirQual
   const res = await fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${token}`)
   const data = await res.json()
   const geo = data.data?.city?.geo
+  const rawPm25 = data.data?.iaqi?.pm25?.v ?? null
   return {
-    pm25: data.data?.iaqi?.pm25?.v ?? null,
+    // iaqi.pm25.v is the PM2.5 AQI sub-index (0–500), not µg/m³ — convert it
+    pm25: rawPm25 !== null ? aqiToPm25(rawPm25) : null,
     aqi: data.data?.aqi ?? null,
     station: data.data?.city?.name ?? 'Unknown station',
     stationLat: Array.isArray(geo) ? geo[0] : null,
@@ -102,13 +104,23 @@ export const fetchPm25Stations = async (): Promise<Pm25Station[]> => {
   }
 }
 
-// Approximate AQI → PM2.5 conversion (US EPA breakpoints)
+// AQI ↔ PM2.5 conversions (US EPA linear breakpoints)
 function aqiToPm25(aqi: number): number {
   if (aqi <= 50)  return Math.round((aqi / 50) * 12)
   if (aqi <= 100) return Math.round(12 + ((aqi - 50) / 50) * (35.4 - 12))
   if (aqi <= 150) return Math.round(35.4 + ((aqi - 100) / 50) * (55.4 - 35.4))
   if (aqi <= 200) return Math.round(55.4 + ((aqi - 150) / 50) * (150.4 - 55.4))
   return Math.round(150.4 + ((aqi - 200) / 100) * (250.4 - 150.4))
+}
+
+// PM2.5 µg/m³ → US EPA AQI (for display alongside raw concentration)
+export function pm25ToAqi(pm25: number): number {
+  if (pm25 <= 12)    return Math.round((pm25 / 12) * 50)
+  if (pm25 <= 35.4)  return Math.round(50  + ((pm25 - 12)    / (35.4 - 12))    * 50)
+  if (pm25 <= 55.4)  return Math.round(100 + ((pm25 - 35.4)  / (55.4 - 35.4))  * 50)
+  if (pm25 <= 150.4) return Math.round(150 + ((pm25 - 55.4)  / (150.4 - 55.4)) * 50)
+  if (pm25 <= 250.4) return Math.round(200 + ((pm25 - 150.4) / (250.4 - 150.4)) * 100)
+  return Math.round(300 + ((pm25 - 250.4) / (500.4 - 250.4)) * 200)
 }
 
 // ─── Weather forecast ─────────────────────────────────────────────────────────

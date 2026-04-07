@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import {
@@ -11,6 +12,7 @@ import {
   fetchWeather,
   getSafetyInfo,
   idwPm25,
+  pm25ToAqi,
   reverseGeocode,
 } from "@/lib/api";
 import type {
@@ -150,10 +152,10 @@ export default function MapPage() {
   // Fixed groups by BMA category label
   const CATEGORY_GROUPS = [
     { title: "Activities",          labels: ["Pedal Boating", "Cycling", "Fitness", "Basketball", "Running Track", "Playground", "Swimming Pool", "Badminton", "Skateboard"] },
-    { title: "Pets",                labels: ["Pet Friendly", "Guide Dogs"] },
+    { title: "Pets",                labels: ["Pet Friendly"] },
     { title: "Bathroom",            labels: ["Restroom"] },
     { title: "Transportation",      labels: ["Bus Access", "BTS/MRT", "Parking"] },
-    { title: "Elderly & Disabled",  labels: ["Accessible"] },
+    { title: "Elderly & Disabled",  labels: ["Accessible", "Guide Dogs"] },
   ];
 
   const categoryGroups = useMemo(() => {
@@ -238,14 +240,22 @@ export default function MapPage() {
               <span className="text-3xl font-black leading-none text-white">
                 {airQuality?.pm25 != null ? Math.round(airQuality.pm25) : "—"}
               </span>
-              <span className="mt-0.5 text-xs font-semibold text-white/80">PM2.5</span>
+              <span className="mt-0.5 text-xs font-semibold text-white/80">µg/m³</span>
             </div>
             <div>
               <p className="text-2xl font-bold" style={{ color: safety.color }}>{safety.emoji} {safety.level}</p>
-              <p className="mt-0.5 text-sm text-ink/70">{safety.message}</p>
+              <div className="mt-0.5 flex items-center gap-2">
+                <span className="text-sm text-ink/70">PM2.5</span>
+                {airQuality?.pm25 != null && (
+                  <span className="rounded-full px-2 py-0.5 text-xs font-bold text-white" style={{ backgroundColor: safety.color }}>
+                    US AQI {pm25ToAqi(airQuality.pm25)}
+                  </span>
+                )}
+              </div>
+              <p className="mt-0.5 text-xs text-ink/70">{safety.message}</p>
               {locationLabel && <p className="mt-1 text-xs text-ink/50">📍 {locationLabel}</p>}
               {airQuality?.station && <p className="mt-0.5 text-xs text-ink/40">Sensor: {airQuality.station}</p>}
-              <p className="mt-0.5 text-xs text-ink/30">1-hr avg · AQICN · US EPA scale</p>
+              <p className="mt-0.5 text-xs text-ink/30">1-hr avg · AQICN · other apps may use AQI scale</p>
               {locationError && <p className="mt-1 text-xs text-red-500">⚠️ {locationError}</p>}
             </div>
           </div>
@@ -341,39 +351,37 @@ export default function MapPage() {
               </select>
             </div>
 
-            {/* Category filter — grouped checkboxes, scrollable */}
+            {/* Category filter — grouped checkboxes, fully visible */}
             {categoryGroups.length > 0 && (
-              <div className="mb-4">
-                <div className="max-h-[280px] overflow-y-auto space-y-3 pr-1">
-                  {categoryGroups.map((group) => (
-                    <div key={group.title}>
-                      <p className="mb-1 text-xs font-bold text-ink/40 uppercase tracking-wide">{group.title}</p>
-                      <div className="space-y-0.5">
-                        {group.items.map((c) => {
-                          const active = selectedCategories.has(c.label);
-                          return (
-                            <label
-                              key={c.label}
-                              className="flex cursor-pointer items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-mist"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={active}
-                                onChange={() => toggleCategory(c.label)}
-                                className="accent-canopy h-3.5 w-3.5 shrink-0"
-                              />
-                              <span className="text-base leading-none">{c.icon}</span>
-                              <span className="flex-1 text-sm text-ink">{c.label}</span>
-                              <span className="rounded-full bg-ink/8 px-2 py-0.5 text-xs font-semibold text-ink/50">
-                                {c.count}
-                              </span>
-                            </label>
-                          );
-                        })}
-                      </div>
+              <div className="mb-4 space-y-3">
+                {categoryGroups.map((group) => (
+                  <div key={group.title}>
+                    <p className="mb-1 text-xs font-bold text-ink/40 uppercase tracking-wide">{group.title}</p>
+                    <div className="space-y-0.5">
+                      {group.items.map((c) => {
+                        const active = selectedCategories.has(c.label);
+                        return (
+                          <label
+                            key={c.label}
+                            className="flex cursor-pointer items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-mist"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={active}
+                              onChange={() => toggleCategory(c.label)}
+                              className="accent-canopy h-3.5 w-3.5 shrink-0"
+                            />
+                            <span className="text-base leading-none">{c.icon}</span>
+                            <span className="flex-1 text-sm text-ink">{c.label}</span>
+                            <span className="rounded-full bg-ink/8 px-2 py-0.5 text-xs font-semibold text-ink/50">
+                              {c.count}
+                            </span>
+                          </label>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             )}
 
@@ -425,17 +433,16 @@ export default function MapPage() {
 
         {/* ── Map column ── */}
         <div className="flex flex-col gap-3">
-          {/* Legend */}
+          {/* Legend + View Full Map */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-sm">
             <p className="text-xs font-semibold text-ink/50 shrink-0">Legend</p>
             {[
               { color: "#3b82f6", label: "Your location" },
-              { color: "#22c55e", label: "Park (safe)" },
-              { color: "#d97706", label: "Park (caution)" },
-              { color: "#16a34a", label: "Sensor ≤25 · Safe" },
-              { color: "#d97706", label: "Sensor 26–50 · Moderate" },
-              { color: "#dc2626", label: "Sensor 51–100 · Unhealthy" },
-              { color: "#7c3aed", label: "Sensor >100 · Dangerous" },
+              { color: "#22c55e", label: "Park" },
+              { color: "#16a34a", label: "Sensor ≤25" },
+              { color: "#d97706", label: "Sensor 26–50" },
+              { color: "#dc2626", label: "Sensor 51–100" },
+              { color: "#7c3aed", label: "Sensor >100" },
               { color: "#6366f1", label: "Dropped pin" },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-1.5">
@@ -453,7 +460,6 @@ export default function MapPage() {
               {stationsLoading ? "Loading sensors…" : `${stations.length} sensors`}
               {" · Click map to drop a pin"}
             </p>
-
             <div className="flex items-center gap-1.5">
               <span className="text-xs text-ink/50">Your radius</span>
               {[1, 2, 3].map((km) => (
@@ -463,7 +469,6 @@ export default function MapPage() {
                 </button>
               ))}
             </div>
-
             <div className="flex items-center gap-1.5">
               <span className="text-xs text-ink/50">Sensor zones</span>
               {[1, 2, 3].map((km) => (
@@ -473,12 +478,10 @@ export default function MapPage() {
                 </button>
               ))}
             </div>
-
             <button onClick={() => setShowSensorBuffers((v) => !v)}
               className={`rounded-full px-3 py-1 text-xs font-semibold transition ${showSensorBuffers ? "bg-amber-500 text-white" : "bg-mist text-ink hover:bg-field"}`}>
               {showSensorBuffers ? "Hide zones" : "Show zones"}
             </button>
-
             <div className="flex gap-1 rounded-full border border-ink/10 bg-mist p-1">
               {(["satellite", "street"] as Basemap[]).map((b) => (
                 <button key={b} onClick={() => setBasemap(b)}
@@ -489,8 +492,24 @@ export default function MapPage() {
             </div>
           </div>
 
-          {/* Map — flex-1 so it fills remaining height to match sidebar */}
-          <div className="flex-1 overflow-hidden rounded-3xl border border-white/60 shadow-sm" style={{ minHeight: 480 }}>
+          {/* Map — flex-1 matches sidebar height */}
+          <div className="relative flex-1 overflow-hidden rounded-3xl border border-white/60 shadow-sm" style={{ minHeight: 480 }}>
+            {/* Fullscreen icon — top-right corner of the map */}
+            <Link
+              href="/map/fullscreen"
+              title="View full map"
+              style={{
+                position: "absolute", top: 14, right: 14, zIndex: 1000,
+                width: 36, height: 36, borderRadius: 8,
+                background: "rgba(255,255,255,0.9)",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 17, textDecoration: "none", color: "#374151",
+                backdropFilter: "blur(4px)",
+              }}
+            >
+              ⛶
+            </Link>
             <DynamicMapView
               userCoords={userCoords}
               enrichedParks={enrichedParks}
@@ -507,6 +526,7 @@ export default function MapPage() {
           </div>
         </div>
       </div>
+
     </main>
   );
 }
