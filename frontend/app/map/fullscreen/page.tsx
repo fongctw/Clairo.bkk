@@ -80,11 +80,13 @@ export default function FullscreenMapPage() {
   const [enrichedParks, setEnrichedParks] = useState<EnrichedPark[]>([]);
   const [stations, setStations]           = useState<Pm25Station[]>([]);
   const [bufferKm, setBufferKm]           = useState(2);
-  const [sensorBufferKm, setSensorBufferKm] = useState(3);
   const [basemap, setBasemap]             = useState<Basemap>("satellite");
   const [showSensorBuffers, setShowSensorBuffers] = useState(true);
+  const [showChoropleth, setShowChoropleth] = useState(false);
   const [flyToCoords, setFlyToCoords]     = useState<[number, number] | null>(null);
+  const [openParkId, setOpenParkId]       = useState<{ id: number; tick: number } | null>(null);
   const [search, setSearch]               = useState("");
+  const [searchOpen, setSearchOpen]       = useState(false);
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
 
@@ -157,6 +159,20 @@ export default function FullscreenMapPage() {
     }),
   [parksWithDistance, search, selectedDistrict, selectedCategories]);
 
+  const searchSuggestions = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return [];
+    return enrichedParks
+      .filter((p) => p.nameEn.toLowerCase().includes(q) || p.nameTh.includes(search.trim()))
+      .slice(0, 8);
+  }, [search, enrichedParks]);
+
+  function flyToPark(park: EnrichedPark & { distanceM?: number | null }) {
+    if (!park.centroid) return;
+    setFlyToCoords([...park.centroid] as [number, number]);
+    setOpenParkId((prev) => ({ id: park.id, tick: (prev?.tick ?? 0) + 1 }));
+  }
+
   function toggleCategory(label: string) {
     setSelectedCategories((prev) => { const n = new Set(prev); n.has(label) ? n.delete(label) : n.add(label); return n; });
   }
@@ -177,12 +193,15 @@ export default function FullscreenMapPage() {
           visibleParkIds={visibleParkIds}
           stations={stations}
           bufferKm={bufferKm}
-          sensorBufferKm={sensorBufferKm}
           basemap={basemap}
           showSensorBuffers={showSensorBuffers}
           flyToCoords={flyToCoords}
+          openParkId={openParkId?.id ?? null}
+          openParkTick={openParkId?.tick ?? 0}
+          panelPaddingRight={316}
           userPm25={airQuality?.pm25 ?? null}
           activityMaxPm25={null}
+          showChoropleth={showChoropleth}
         />
       </div>
 
@@ -201,11 +220,11 @@ export default function FullscreenMapPage() {
             fontSize: 13, fontWeight: 700, fontFamily: "system-ui,sans-serif",
             whiteSpace: "nowrap",
           }}>
-            <span style={{ fontSize: 20, fontWeight: 900 }}>{airQuality?.pm25 != null ? Math.round(airQuality.pm25) : "—"}</span>
-            <span style={{ opacity: 0.85 }}>µg/m³</span>
+            <span style={{ fontSize: 20, fontWeight: 900 }}>{airQuality?.pm25 != null ? pm25ToAqi(airQuality.pm25) : "—"}</span>
+            <span style={{ opacity: 0.85 }}>US AQI</span>
             {airQuality?.pm25 != null && (
-              <span style={{ opacity: 0.7, fontSize: 11, background: "rgba(0,0,0,0.18)", borderRadius: 999, padding: "1px 7px" }}>
-                AQI {pm25ToAqi(airQuality.pm25)}
+              <span style={{ opacity: 0.65, fontSize: 11, background: "rgba(0,0,0,0.15)", borderRadius: 999, padding: "1px 7px" }}>
+                {Math.round(airQuality.pm25)} µg/m³
               </span>
             )}
             <span style={{ opacity: 0.7 }}>·</span>
@@ -279,7 +298,7 @@ export default function FullscreenMapPage() {
             </span>
           </div>
 
-          {/* Scrollable body — overflows only when screen is very small */}
+          {/* Scrollable body */}
           <div style={{
             background: PANEL_BG,
             flex: 1,
@@ -287,12 +306,44 @@ export default function FullscreenMapPage() {
             padding: "10px 14px 14px",
           }}>
 
-            {/* Search */}
-            <input
-              type="text" placeholder="Search parks…" value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ width: "100%", boxSizing: "border-box", marginBottom: 8, borderRadius: 10, border: "1px solid #e5e7eb", background: "#f3f6f4", padding: "6px 10px", fontSize: 12, outline: "none" }}
-            />
+            {/* Search with autocomplete */}
+            <div style={{ position: "relative", marginBottom: 8 }}>
+              <input
+                type="text"
+                placeholder="Search parks…"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setSearchOpen(true); }}
+                onFocus={() => setSearchOpen(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && searchSuggestions.length > 0) {
+                    flyToPark(searchSuggestions[0]);
+                    setSearch(searchSuggestions[0].nameEn);
+                    setSearchOpen(false);
+                  }
+                  if (e.key === "Escape") setSearchOpen(false);
+                }}
+                style={{ width: "100%", boxSizing: "border-box", borderRadius: 10, border: "1px solid #e5e7eb", background: "#f3f6f4", padding: "6px 10px", fontSize: 12, outline: "none" }}
+              />
+              {searchOpen && searchSuggestions.length > 0 && (
+                <div style={{
+                  position: "absolute", left: 0, right: 0, top: "100%", zIndex: 50,
+                  marginTop: 4, borderRadius: 10, border: "1px solid #e5e7eb",
+                  background: "white", boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+                  overflow: "hidden",
+                }}>
+                  {searchSuggestions.map((park) => (
+                    <button
+                      key={park.id}
+                      onMouseDown={(e) => { e.preventDefault(); flyToPark(park); setSearch(park.nameEn); setSearchOpen(false); }}
+                      style={{ width: "100%", display: "flex", flexDirection: "column", padding: "7px 10px", textAlign: "left", background: "none", border: "none", cursor: "pointer", borderBottom: "1px solid #f3f4f6" }}
+                    >
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#111827" }}>{park.nameEn}</span>
+                      <span style={{ fontSize: 10, color: "#9ca3af" }}>{park.nameTh}{park.district ? ` · ${park.district}` : ""}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* District */}
             <span style={secLabel}>Area (District)</span>
@@ -330,7 +381,7 @@ export default function FullscreenMapPage() {
 
             <div style={{ borderTop: "1px solid #f3f4f6", margin: "8px 0" }} />
 
-            {/* Map Controls — inline */}
+            {/* Map Controls */}
             <span style={secLabel}>Your Radius</span>
             <div style={{ display: "flex", gap: 5, marginBottom: 8, flexWrap: "wrap" }}>
               {[1, 2, 3].map((km) => <button key={km} onClick={() => setBufferKm(km)} style={chip(bufferKm === km, "#3b82f6")}>{km} km</button>)}
@@ -338,11 +389,18 @@ export default function FullscreenMapPage() {
 
             <span style={secLabel}>Sensor Zones</span>
             <div style={{ display: "flex", gap: 5, marginBottom: 8, flexWrap: "wrap" }}>
-              {[1, 2, 3].map((km) => <button key={km} onClick={() => setSensorBufferKm(km)} style={chip(sensorBufferKm === km, "#f59e0b")}>{km} km</button>)}
               <button onClick={() => setShowSensorBuffers((v) => !v)} style={chip(showSensorBuffers, "#f59e0b")}>
                 {showSensorBuffers ? "Hide" : "Show"}
               </button>
             </div>
+
+            <span style={secLabel}>District AQI</span>
+            <div style={{ display: "flex", gap: 5, marginBottom: 8 }}>
+              <button onClick={() => setShowChoropleth((v) => !v)} style={chip(showChoropleth, "#7c3aed")}>
+                {showChoropleth ? "Hide AQI map" : "Show AQI map"}
+              </button>
+            </div>
+
 
             <span style={secLabel}>Basemap</span>
             <div style={{ display: "flex", gap: 5, marginBottom: 10 }}>
@@ -361,7 +419,7 @@ export default function FullscreenMapPage() {
                 {parksWithDistance.slice(0, 3).map((park) => (
                   <button
                     key={park.id}
-                    onClick={() => park.centroid && setFlyToCoords([...park.centroid] as [number, number])}
+                    onClick={() => flyToPark(park)}
                     style={{ width: "100%", textAlign: "left", background: "#f9fafb", border: "1px solid #f3f4f6", borderRadius: 10, padding: "7px 10px", marginBottom: 5, cursor: "pointer" }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 6, marginBottom: 1 }}>

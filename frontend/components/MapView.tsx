@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Circle,
   GeoJSON as GeoJSONLayer,
@@ -13,7 +13,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 
-import { fetchAirQuality, getSafetyInfo, idwPm25 } from "@/lib/api";
+import { fetchAirQuality, getSafetyInfo, idwPm25, pm25ToAqi } from "@/lib/api";
 import type { BMACategory, EnrichedPark, IdwResult, Pm25Station, SafetyInfo } from "@/lib/api";
 
 // ─── Tiles ────────────────────────────────────────────────────────────────────
@@ -92,7 +92,7 @@ const droppedPinIcon = new L.DivIcon({
 
 function makeSensorIcon(pm25: number | null) {
   const color = sensorColor(pm25);
-  const label = pm25 !== null ? Math.round(pm25).toString() : "?";
+  const label = pm25 !== null ? pm25ToAqi(pm25).toString() : "?";
   return new L.DivIcon({
     className: "",
     html: `
@@ -130,8 +130,14 @@ function FlyToUser({ coords }: { coords: [number, number] }) {
   return null;
 }
 
-function PinDropHandler({ onDrop }: { onDrop: (lat: number, lng: number) => void }) {
-  useMapEvents({ click: (e) => onDrop(e.latlng.lat, e.latlng.lng) });
+function PinDropHandler({ onDrop, popupJustClosed }: { onDrop: (lat: number, lng: number) => void; popupJustClosed: React.MutableRefObject<boolean> }) {
+  useMapEvents({
+    popupclose: () => { popupJustClosed.current = true; },
+    click: (e) => {
+      if (popupJustClosed.current) { popupJustClosed.current = false; return; }
+      onDrop(e.latlng.lat, e.latlng.lng);
+    },
+  });
   return null;
 }
 
@@ -209,16 +215,21 @@ function BMAPopupContent({ park, stations, activityMaxPm25 }: BMAPopupProps) {
         </div>
       )}
 
-      {/* PM2.5 badge */}
+      {/* AQI badge */}
       {loading && <p style={{ fontSize: 12, color: "#9ca3af", margin: "0 0 8px" }}>Loading air quality…</p>}
       {!loading && (
         <div style={{ background: safety.color, borderRadius: 10, padding: "8px 12px", textAlign: "center", marginBottom: 6 }}>
-          <p style={{ color: "white", fontWeight: 800, fontSize: 18, margin: 0 }}>
-            PM2.5 {pm25 !== null ? Math.round(pm25) : "—"} µg/m³
+          <p style={{ color: "white", fontWeight: 800, fontSize: 22, margin: 0 }}>
+            {pm25 !== null ? pm25ToAqi(pm25) : "—"}
           </p>
-          <p style={{ color: "rgba(255,255,255,0.9)", fontSize: 12, fontWeight: 700, margin: "3px 0 0" }}>
-            {safety.emoji} {safety.level}
+          <p style={{ color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, margin: "1px 0 2px" }}>
+            US AQI · {safety.emoji} {safety.level}
           </p>
+          {pm25 !== null && (
+            <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, margin: 0 }}>
+              PM2.5 {Math.round(pm25)} µg/m³
+            </p>
+          )}
         </div>
       )}
       {!loading && idwMeta && (
@@ -259,12 +270,16 @@ export interface MapViewProps {
   visibleParkIds: Set<number> | null;
   stations: Pm25Station[];
   bufferKm: number;
-  sensorBufferKm: number;
   basemap: "satellite" | "street";
   showSensorBuffers: boolean;
   flyToCoords: [number, number] | null;
+  openParkId: number | null;
+  openParkTick?: number;
   userPm25: number | null;
   activityMaxPm25: number | null;
+  showChoropleth?: boolean;
+  /** Extra right-side padding (px) so popup auto-pan clears any overlay panel */
+  panelPaddingRight?: number;
 }
 
 // ─── FlyTo helper (reacts to prop changes) ────────────────────────────────────
@@ -274,6 +289,42 @@ function FlyTo({ coords }: { coords: [number, number] }) {
   useEffect(() => {
     map.flyTo(coords, 15, { animate: true, duration: 1 });
   }, [coords, map]);
+  return null;
+}
+
+// ─── Open popup for a park after flying ──────────────────────────────────────
+
+function OpenParkPopup({ parkId, tick, panelPaddingRight, markerRefs }: {
+  parkId: number;
+  tick: number;
+  panelPaddingRight: number;
+  markerRefs: React.RefObject<Map<number, L.Marker>>;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    const tryOpen = (attempts = 0) => {
+      const marker = markerRefs.current?.get(parkId);
+      if (marker) {
+        // Wait for fly animation to fully complete (duration=1s), then reposition
+        // marker into the lower-center of the visible viewport so popup has room above.
+        setTimeout(() => {
+          const mapSize = map.getSize();
+          const markerPt = map.latLngToContainerPoint(marker.getLatLng());
+          // Target: marker at 82% down so popup has plenty of room above
+          const usableWidth = mapSize.x - panelPaddingRight;
+          const targetX = usableWidth / 2;
+          const targetY = mapSize.y * 0.82;
+          const dx = markerPt.x - targetX;
+          const dy = markerPt.y - targetY;
+          map.panBy([dx, dy], { animate: true, duration: 0.25 });
+          setTimeout(() => marker.openPopup(), 280);
+        }, 1100);
+      } else if (attempts < 10) {
+        setTimeout(() => tryOpen(attempts + 1), 150);
+      }
+    };
+    tryOpen();
+  }, [parkId, tick, panelPaddingRight, markerRefs, map]);
   return null;
 }
 
@@ -332,16 +383,42 @@ function overpassRelationsToGeoJSON(elements: any[]): GeoJSON.FeatureCollection 
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, bufferKm, sensorBufferKm, basemap, showSensorBuffers, flyToCoords, userPm25, activityMaxPm25 }: MapViewProps) {
+export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, bufferKm, basemap, showSensorBuffers, flyToCoords, openParkId, openParkTick, userPm25, activityMaxPm25, showChoropleth = false, panelPaddingRight = 0 }: MapViewProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [droppedPin, setDroppedPin] = useState<[number, number] | null>(null);
   const [droppedPinSafety, setDroppedPinSafety] = useState<SafetyInfo | null>(null);
   const [droppedPinPm25, setDroppedPinPm25] = useState<number | null>(null);
   const [droppedPinMeta, setDroppedPinMeta] = useState<IdwResult | null>(null);
   const droppedMarkerRef = useRef<L.Marker | null>(null);
+  const parkMarkerRefs = useRef<Map<number, L.Marker>>(new Map());
+  const popupJustClosed = useRef(false);
   const [bangkokBoundary, setBangkokBoundary] = useState<GeoJSON.FeatureCollection | null>(null);
   const [bangkokDistricts, setBangkokDistricts] = useState<GeoJSON.FeatureCollection | null>(null);
   const [bangkokSubdistricts, setBangkokSubdistricts] = useState<GeoJSON.FeatureCollection | null>(null);
+
+  // Choropleth: district polygons coloured by IDW PM2.5
+  const districtChoropleth = useMemo<GeoJSON.FeatureCollection | null>(() => {
+    if (!bangkokDistricts || stations.length === 0) return null;
+    const features = bangkokDistricts.features.map((f) => {
+      let lats = 0, lngs = 0, count = 0;
+      const coords: number[][][] =
+        f.geometry.type === "Polygon"
+          ? (f.geometry as GeoJSON.Polygon).coordinates
+          : (f.geometry as GeoJSON.MultiPolygon).coordinates[0];
+      coords[0].forEach(([lng, lat]) => { lngs += lng; lats += lat; count++; });
+      const cLat = lats / count, cLng = lngs / count;
+      const result = idwPm25(cLat, cLng, stations, 40);
+      const pm25 = result?.pm25 ?? null;
+      const color =
+        pm25 === null  ? "#9ca3af"
+        : pm25 <= 25   ? "#16a34a"
+        : pm25 <= 50   ? "#d97706"
+        : pm25 <= 100  ? "#dc2626"
+        : "#7c3aed";
+      return { ...f, properties: { ...f.properties, pm25, color } };
+    });
+    return { type: "FeatureCollection", features };
+  }, [bangkokDistricts, stations]);
 
   useEffect(() => { setIsMounted(true); }, []);
 
@@ -422,7 +499,8 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
     >
       {userCoords && <FlyToUser coords={userCoords} />}
       {flyToCoords && <FlyTo coords={flyToCoords} />}
-      <PinDropHandler onDrop={handlePinDrop} />
+      {openParkId && <OpenParkPopup parkId={openParkId} tick={openParkTick ?? 0} panelPaddingRight={panelPaddingRight} markerRefs={parkMarkerRefs} />}
+      <PinDropHandler onDrop={handlePinDrop} popupJustClosed={popupJustClosed} />
 
       <TileLayer key={basemap} url={tile.url} attribution={tile.attribution} noWrap />
 
@@ -458,18 +536,50 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
       {/* ── Bangkok province boundary — QGIS-style amber highlight ── */}
       {bangkokBoundary && (
         <GeoJSONLayer
-          key="bkk-boundary"
+          key={`bkk-boundary-${showChoropleth}`}
           data={bangkokBoundary}
           style={() => ({
             color: "#a9c7ee",
             weight: 3.5,
             opacity: 1,
             fillColor: "#7AA2C4",
-            fillOpacity: 0.3,
+            fillOpacity: showChoropleth ? 0 : 0.3,
             dashArray: "10 7",
             lineCap: "round",
             lineJoin: "round",
           })}
+        />
+      )}
+
+      {/* ── District choropleth — AQI fill (renders above boundary) ── */}
+      {showChoropleth && districtChoropleth && (
+        <GeoJSONLayer
+          key={`choropleth-${districtChoropleth.features.length}-${stations.map(s => s.pm25).join(",").length}`}
+          data={districtChoropleth}
+          style={(feature) => ({
+            color: "transparent",
+            weight: 0,
+            fillColor: feature?.properties?.color ?? "#9ca3af",
+            fillOpacity: 0.35,
+          })}
+          onEachFeature={(feature, layer) => {
+            const name = feature.properties?.nameEn || feature.properties?.name || "District";
+            const pm25 = feature.properties?.pm25;
+            const aqi = pm25 !== null && pm25 !== undefined ? pm25ToAqi(pm25) : null;
+            const label = pm25 === null || pm25 === undefined ? "No data"
+              : pm25 <= 25  ? "Safe"
+              : pm25 <= 50  ? "Moderate"
+              : pm25 <= 100 ? "Unhealthy"
+              : "Dangerous";
+            layer.bindTooltip(
+              `<div style="font-family:system-ui,sans-serif;font-size:12px;font-weight:700;padding:2px 4px">${name}<br/><span style="color:${feature.properties?.color}">${aqi !== null ? `AQI ${aqi} · ${label}` : "No data"}</span></div>`,
+              { sticky: true, opacity: 0.95 }
+            );
+            layer.on({
+              mouseover: (e) => { e.target.setStyle({ fillOpacity: 0.55 }); },
+              mouseout:  (e) => { e.target.setStyle({ fillOpacity: 0.35 }); },
+            });
+          }}
         />
       )}
 
@@ -504,8 +614,16 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
         if (visibleParkIds && !visibleParkIds.has(ep.id)) return null;
         const safe = activityMaxPm25 === null || userPm25 === null || userPm25 <= activityMaxPm25;
         return (
-          <Marker key={`bma-${ep.id}`} position={ep.centroid} icon={safe ? parkIcon : warnParkIcon}>
-            <Popup minWidth={260} maxWidth={310}>
+          <Marker
+            key={`bma-${ep.id}`}
+            position={ep.centroid}
+            icon={safe ? parkIcon : warnParkIcon}
+            ref={(m) => {
+              if (m) parkMarkerRefs.current.set(ep.id, m);
+              else parkMarkerRefs.current.delete(ep.id);
+            }}
+          >
+            <Popup minWidth={260} maxWidth={310} autoPan autoPanPaddingTopLeft={[20, 60]} autoPanPaddingBottomRight={[20, 20]}>
               <BMAPopupContent
                 park={ep}
                 stations={stations}
@@ -519,7 +637,6 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
       {/* PM2.5 sensor buffer circles — 1 km, 2 km, 3 km rings */}
       {showSensorBuffers && stations.flatMap((s) =>
         [1000, 2000, 3000]
-          .filter((r) => r <= sensorBufferKm * 1000)
           .map((r) => (
             <Circle
               key={`buf-${s.id}-${r}`}
@@ -544,10 +661,11 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
             <div dangerouslySetInnerHTML={{ __html: inlinePopup(`
               <p style="font-weight:700;font-size:13px;margin:0 0 6px;color:#374151">${s.name}</p>
               <div style="background:${sensorColor(s.pm25)};border-radius:8px;padding:8px 12px;text-align:center">
-                <p style="color:white;font-weight:800;font-size:20px;margin:0">
-                  ${s.pm25 !== null ? Math.round(s.pm25) : "—"} µg/m³
+                <p style="color:white;font-weight:800;font-size:22px;margin:0">
+                  ${s.pm25 !== null ? pm25ToAqi(s.pm25) : "—"}
                 </p>
-                <p style="color:rgba(255,255,255,0.85);font-size:11px;margin:2px 0 0">PM2.5 · AQI ${s.aqi ?? "—"}</p>
+                <p style="color:rgba(255,255,255,0.85);font-size:11px;font-weight:600;margin:2px 0 1px">US AQI</p>
+                <p style="color:rgba(255,255,255,0.65);font-size:10px;margin:0">PM2.5 ${s.pm25 !== null ? Math.round(s.pm25) : "—"} µg/m³</p>
               </div>
             `) }} />
           </Popup>
@@ -580,12 +698,17 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
               <p style={{ fontWeight: 700, fontSize: 14, margin: "0 0 10px" }}>📍 Dropped pin</p>
               {droppedPinSafety && (
                 <div style={{ background: droppedPinSafety.color, borderRadius: 12, padding: "10px 14px", textAlign: "center", marginBottom: 10 }}>
-                  <p style={{ color: "white", fontWeight: 800, fontSize: 20, margin: 0 }}>
-                    PM2.5: {droppedPinPm25 !== null ? Math.round(droppedPinPm25) : "—"} µg/m³
+                  <p style={{ color: "white", fontWeight: 800, fontSize: 24, margin: 0 }}>
+                    {droppedPinPm25 !== null ? pm25ToAqi(droppedPinPm25) : "—"}
                   </p>
-                  <p style={{ color: "white", fontWeight: 700, fontSize: 13, margin: "4px 0 2px" }}>
-                    {droppedPinSafety.emoji} {droppedPinSafety.level}
+                  <p style={{ color: "rgba(255,255,255,0.85)", fontWeight: 600, fontSize: 11, margin: "2px 0 1px" }}>
+                    US AQI · {droppedPinSafety.emoji} {droppedPinSafety.level}
                   </p>
+                  {droppedPinPm25 !== null && (
+                    <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, margin: "0 0 2px" }}>
+                      PM2.5 {Math.round(droppedPinPm25)} µg/m³
+                    </p>
+                  )}
                   <p style={{ color: "rgba(255,255,255,0.85)", fontSize: 12, margin: 0 }}>
                     {droppedPinSafety.message}
                   </p>

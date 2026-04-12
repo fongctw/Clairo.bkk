@@ -2045,5 +2045,54 @@
       }
     ],
     "image": "https://greener.bangkok.go.th/wp-content/uploads/2024/04/IMG_0659-scaled.jpeg"
+  },
+  {
+    "id": 9001,
+    "name": "สวนพรรณภิรมย์",
+    "slug": "suan-phanphirom",
+    "link": "http://203.155.220.217/office/ppdd/publicpark/thai/2011/park23.asp",
+    "district": {
+      "id": 0,
+      "name": "เขตลาดกระบัง",
+      "slug": "khet-lat-krabang"
+    },
+    "categories": [
+      {
+        "id": 119,
+        "name": "มีห้องน้ำ",
+        "slug": "restroom"
+      },
+      {
+        "id": 118,
+        "name": "บาสเก็ตบอล",
+        "slug": "basketball"
+      },
+      {
+        "id": 221,
+        "name": "ลานสเกตบอร์ด",
+        "slug": "%e0%b8%a5%e0%b8%b2%e0%b8%99%e0%b8%aa%e0%b9%80%e0%b8%81%e0%b8%95%e0%b8%9a%e0%b8%ad%e0%b8%a3%e0%b9%8c%e0%b8%94"
+      },
+      {
+        "id": 24,
+        "name": "สนามเด็กเล่น",
+        "slug": "playground"
+      },
+      {
+        "id": 34,
+        "name": "ให้สุนัขช่วยนำทางเข้าได้",
+        "slug": "guide-dogs-allowed"
+      },
+      {
+        "id": 27,
+        "name": "อนุญาตสัตว์เลี้ยง",
+        "slug": "pet-friendly"
+      },
+      {
+        "id": 30,
+        "name": "มีที่จอดรถ",
+        "slug": "parking-available"
+      }
+    ],
+    "image": "https://stupid-gray-cxbyjlzwi4.edgeone.app/aroon-wongworrasathian-%E0%B8%88%E0%B8%B2%E0%B8%81-google-map.jpg"
   }
 ]

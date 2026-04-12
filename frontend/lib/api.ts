@@ -284,11 +284,10 @@ export const fetchBMAParks = async (): Promise<BMAPark[]> => {
 }
 
 // Normalize Thai park name for fuzzy matching
-// Strips common prefix words so e.g. "สวนลุมพินี" matches "ลุมพินี"
 function normalizeThai(name: string): string {
   return name
-    .replace(/^(สวน|สวนสาธารณะ|สวนป่า|อุทยาน|บึง|ลาน|สนาม)/u, '')
-    .replace(/[()（）]/g, '')
+    .replace(/^(สวนสาธารณะ|สวนป่า|สวน|อุทยาน|บึง|ลาน|สนาม)/u, '') // longer prefixes first
+    .replace(/[()（）ฯ\s]+/gu, '') // strip parens, ฯ, and ALL whitespace for robust comparison
     .trim()
 }
 
@@ -335,7 +334,7 @@ export const fetchEnrichedParks = async (): Promise<EnrichedPark[]> => {
         )
       }) ?? null
 
-      // Compute centroid from matched polygon
+      // Compute centroid from matched polygon, or fall back to meta coords
       let centroid: [number, number] | null = null
       if (matched) {
         const g = matched.geometry
@@ -354,6 +353,10 @@ export const fetchEnrichedParks = async (): Promise<EnrichedPark[]> => {
             ring.reduce((s: number, c: number[]) => s + c[0], 0) / ring.length,
           ]
         }
+      }
+      // No OSM polygon — use hardcoded fallback centroid from meta
+      if (!centroid && meta?.fallbackCentroid) {
+        centroid = meta.fallbackCentroid
       }
 
       return {

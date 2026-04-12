@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import {
   fetchAirQuality,
@@ -32,15 +33,6 @@ const DynamicMapView = dynamic(
 
 type Basemap = "satellite" | "street";
 
-// ─── Time-of-day advice ───────────────────────────────────────────────────────
-
-function getTimeAdvice() {
-  const h = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" })).getHours();
-  if (h >= 6 && h < 9)   return { icon: "🚗", text: "Morning rush", sub: "PM2.5 typically higher 6–9 am. Best after 10 am." };
-  if (h >= 9 && h < 16)  return { icon: "✅", text: "Good window", sub: "Mid-morning to afternoon is usually the cleanest time." };
-  if (h >= 16 && h < 20) return { icon: "🚗", text: "Evening rush", sub: "PM2.5 spikes 4–8 pm. Consider going earlier or after 8 pm." };
-  return { icon: "🌙", text: "Night time", sub: "Air is usually cleaner at night — check the sensors." };
-}
 
 // ─── Haversine distance ───────────────────────────────────────────────────────
 
@@ -71,13 +63,20 @@ export default function MapPage() {
   const [parksLoading, setParksLoading]       = useState(true);
   const [stationsLoading, setStationsLoading] = useState(true);
   const [bufferKm, setBufferKm]               = useState(2);
-  const [sensorBufferKm, setSensorBufferKm]   = useState(3);
   const [basemap, setBasemap]                 = useState<Basemap>("satellite");
   const [showSensorBuffers, setShowSensorBuffers] = useState(true);
   const [flyToCoords, setFlyToCoords]         = useState<[number, number] | null>(null);
+  const [openParkId, setOpenParkId]           = useState<{ id: number; tick: number } | null>(null);
   const [search, setSearch]                   = useState("");
+  const [searchOpen, setSearchOpen]           = useState(false);
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [bestParks, setBestParks] = useState<Array<EnrichedPark & { distanceM: number; pm25: number | null }> | null>(null);
+  const [bestLoading, setBestLoading] = useState(false);
+  const [showChoropleth, setShowChoropleth] = useState(false);
+  const searchParams = useSearchParams();
+  const parkIdParam = searchParams.get("parkId");
 
   useEffect(() => {
     if (!navigator.geolocation) { setLocationError("Geolocation not supported"); return; }
@@ -125,6 +124,14 @@ export default function MapPage() {
     fetchPm25Stations().then(setStations).catch(() => setStations([])).finally(() => setStationsLoading(false));
   }, []);
 
+  // Fly to park from ?parkId= query param (e.g. coming from ranking page)
+  useEffect(() => {
+    if (!parkIdParam || enrichedParks.length === 0) return;
+    const park = enrichedParks.find((p) => p.id === Number(parkIdParam));
+    if (park) flyToPark(park);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parkIdParam, enrichedParks]);
+
   useEffect(() => {
     if (!userCoords || stations.length === 0) return;
     const result = idwPm25(userCoords[0], userCoords[1], stations);
@@ -134,7 +141,6 @@ export default function MapPage() {
     }
   }, [stations, userCoords]);
 
-  const timeAdvice   = getTimeAdvice();
   const locationLabel = location ? [location.district, location.area, location.city].filter(Boolean).join(", ") : null;
 
   // ─── Derived filter options from enrichedParks data ───────────────────────
@@ -229,6 +235,45 @@ export default function MapPage() {
 
   const hasActiveFilters = !!(search.trim() || selectedDistrict || selectedCategories.size > 0);
 
+  function flyToPark(park: EnrichedPark & { distanceM?: number | null }) {
+    if (!park.centroid) return;
+    setFlyToCoords([...park.centroid] as [number, number]);
+    setOpenParkId((prev) => ({ id: park.id, tick: (prev?.tick ?? 0) + 1 }));
+  }
+
+  function findBestParks() {
+    if (!userCoords) return;
+    setBestLoading(true);
+    setBestParks(null);
+    const [uLat, uLng] = userCoords;
+    const candidates = enrichedParks
+      .filter((p) => p.centroid)
+      .map((p) => {
+        const distanceM = haversineM(uLat, uLng, p.centroid![0], p.centroid![1]);
+        const result = idwPm25(p.centroid![0], p.centroid![1], stations, 40);
+        const pm25 = result?.pm25 ?? null;
+        // score: closer + cleaner = higher; skip if pm25 unavailable
+        const distKm = distanceM / 1000;
+        const score = pm25 !== null && distKm > 0 ? (1 / distKm) * (1 / pm25) : 0;
+        return { ...p, distanceM, pm25, score };
+      })
+      .filter((p) => p.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+    setBestParks(candidates);
+    setBestLoading(false);
+  }
+
+  // Autocomplete suggestions: match search against all parks
+  const searchSuggestions = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return [];
+    return enrichedParks
+      .filter((p) => p.nameEn.toLowerCase().includes(q) || p.nameTh.includes(search.trim()))
+      .slice(0, 8);
+  }, [search, enrichedParks]);
+
+
   return (
     <main className="space-y-4">
 
@@ -238,32 +283,23 @@ export default function MapPage() {
           <div className="flex items-center gap-4">
             <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl shadow-md" style={{ backgroundColor: safety.color }}>
               <span className="text-3xl font-black leading-none text-white">
-                {airQuality?.pm25 != null ? Math.round(airQuality.pm25) : "—"}
+                {airQuality?.pm25 != null ? pm25ToAqi(airQuality.pm25) : "—"}
               </span>
-              <span className="mt-0.5 text-xs font-semibold text-white/80">µg/m³</span>
+              <span className="mt-0.5 text-xs font-semibold text-white/80">US AQI</span>
             </div>
             <div>
               <p className="text-2xl font-bold" style={{ color: safety.color }}>{safety.emoji} {safety.level}</p>
               <div className="mt-0.5 flex items-center gap-2">
-                <span className="text-sm text-ink/70">PM2.5</span>
                 {airQuality?.pm25 != null && (
-                  <span className="rounded-full px-2 py-0.5 text-xs font-bold text-white" style={{ backgroundColor: safety.color }}>
-                    US AQI {pm25ToAqi(airQuality.pm25)}
-                  </span>
+                  <span className="text-sm text-ink/60">PM2.5 {Math.round(airQuality.pm25)} µg/m³</span>
                 )}
               </div>
               <p className="mt-0.5 text-xs text-ink/70">{safety.message}</p>
               {locationLabel && <p className="mt-1 text-xs text-ink/50">📍 {locationLabel}</p>}
               {airQuality?.station && <p className="mt-0.5 text-xs text-ink/40">Sensor: {airQuality.station}</p>}
-              <p className="mt-0.5 text-xs text-ink/30">1-hr avg · AQICN · other apps may use AQI scale</p>
+              <p className="mt-0.5 text-xs text-ink/30">1-hr avg · AQICN · US EPA scale</p>
               {locationError && <p className="mt-1 text-xs text-red-500">⚠️ {locationError}</p>}
             </div>
-          </div>
-
-          {/* Time advice */}
-          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3 shadow-sm backdrop-blur">
-            <p className="font-semibold text-ink">{timeAdvice.icon} {timeAdvice.text}</p>
-            <p className="mt-1 text-xs text-ink/60">{timeAdvice.sub}</p>
           </div>
 
           {/* Weather */}
@@ -327,65 +363,168 @@ export default function MapPage() {
               )}
             </div>
 
-            {/* Search */}
-            <input
-              type="text"
-              placeholder="Search parks…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="mb-3 w-full rounded-xl border border-ink/10 bg-mist px-3 py-2 text-sm outline-none focus:border-canopy"
-            />
+            {/* ── Best Park For Me ── */}
+            <button
+              onClick={() => bestParks !== null ? setBestParks(null) : findBestParks()}
+              disabled={!userCoords || parksLoading || stations.length === 0}
+              className={`mb-3 w-full rounded-2xl px-4 py-3 text-sm font-bold text-white shadow-sm transition disabled:opacity-40 disabled:cursor-not-allowed ${bestParks !== null ? "bg-ink/70 hover:bg-ink/60" : "bg-canopy hover:bg-canopy/90"}`}
+            >
+              {bestLoading ? "Finding…" : bestParks !== null ? "✕ Close Recommendations" : "🎯 Find Best Park For Me"}
+            </button>
 
-            {/* District filter */}
-            <div className="mb-3">
-              <p className="mb-1.5 text-xs font-semibold text-ink/50">Area (District)</p>
-              <select
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                className="w-full rounded-xl border border-ink/10 bg-mist px-3 py-2 text-sm outline-none focus:border-canopy"
-              >
-                <option value="">All districts</option>
-                {allDistricts.map(({ name, count }) => (
-                  <option key={name} value={name}>{name} ({count})</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Category filter — grouped checkboxes, fully visible */}
-            {categoryGroups.length > 0 && (
-              <div className="mb-4 space-y-3">
-                {categoryGroups.map((group) => (
-                  <div key={group.title}>
-                    <p className="mb-1 text-xs font-bold text-ink/40 uppercase tracking-wide">{group.title}</p>
-                    <div className="space-y-0.5">
-                      {group.items.map((c) => {
-                        const active = selectedCategories.has(c.label);
-                        return (
-                          <label
-                            key={c.label}
-                            className="flex cursor-pointer items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-mist"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={active}
-                              onChange={() => toggleCategory(c.label)}
-                              className="accent-canopy h-3.5 w-3.5 shrink-0"
-                            />
-                            <span className="text-base leading-none">{c.icon}</span>
-                            <span className="flex-1 text-sm text-ink">{c.label}</span>
-                            <span className="rounded-full bg-ink/8 px-2 py-0.5 text-xs font-semibold text-ink/50">
-                              {c.count}
-                            </span>
-                          </label>
-                        );
-                      })}
+            {/* Best park results */}
+            {bestParks !== null && (
+              <div className="mb-3 space-y-2">
+                {bestParks.length === 0 && (
+                  <p className="text-xs text-ink/40 text-center py-2">No results — try enabling location or waiting for air data.</p>
+                )}
+                {bestParks.map((park, i) => {
+                  const safety = getSafetyInfo(park.pm25);
+                  const aqi = park.pm25 !== null ? pm25ToAqi(park.pm25) : null;
+                  const actLabel =
+                    park.pm25 === null ? "No data"
+                    : park.pm25 <= 25  ? "Safe to run"
+                    : park.pm25 <= 50  ? "Light activity"
+                    : park.pm25 <= 100 ? "Wear mask"
+                    : "Avoid outdoors";
+                  return (
+                    <div key={park.id} className="rounded-2xl border border-canopy/20 bg-canopy/5 p-3">
+                      <div className="mb-1.5 flex items-start justify-between gap-2">
+                        <div>
+                          <span className="mr-1.5 text-xs font-black text-canopy/60">
+                            {i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}
+                          </span>
+                          <span className="text-sm font-bold text-ink">{park.nameEn}</span>
+                          <p className="text-xs text-ink/40">{park.nameTh}</p>
+                        </div>
+                        {aqi !== null && (
+                          <div className="flex shrink-0 flex-col items-center rounded-xl px-2.5 py-1.5 text-white" style={{ backgroundColor: safety.color }}>
+                            <span className="text-base font-black leading-none">{aqi}</span>
+                            <span className="text-xs opacity-80">AQI</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 text-xs text-ink/60 mb-2">
+                        <span>📍 {fmtDist(park.distanceM)}</span>
+                        {park.openHours && <span>🕐 {park.openHours}</span>}
+                        <span style={{ color: safety.color }} className="font-semibold">{actLabel}</span>
+                      </div>
+                      {park.categories.length > 0 && (
+                        <div className="mb-2 flex flex-wrap gap-1">
+                          {park.categories.map((c, ci) => (
+                            <span key={ci} title={c.label} className="rounded-md bg-white px-1.5 py-0.5 text-xs border border-ink/8">{c.icon} {c.label}</span>
+                          ))}
+                        </div>
+                      )}
+                      <button
+                        onClick={() => flyToPark(park)}
+                        className="w-full rounded-xl bg-canopy px-3 py-1.5 text-xs font-bold text-white transition hover:bg-canopy/90"
+                      >
+                        View on Map →
+                      </button>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
-            {/* ── 3 Nearest parks ── */}
+            {/* Search autocomplete */}
+            <div className="relative mb-3">
+              <input
+                type="text"
+                placeholder="Search parks…"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setSearchOpen(true); }}
+                onFocus={() => setSearchOpen(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && searchSuggestions.length > 0) {
+                    flyToPark(searchSuggestions[0]);
+                    setSearch(searchSuggestions[0].nameEn);
+                    setSearchOpen(false);
+                  }
+                  if (e.key === "Escape") setSearchOpen(false);
+                }}
+                className="w-full rounded-xl border border-ink/10 bg-mist px-3 py-2 text-sm outline-none focus:border-canopy"
+              />
+              {searchOpen && searchSuggestions.length > 0 && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-xl border border-ink/10 bg-white shadow-lg">
+                  {searchSuggestions.map((park) => (
+                    <button
+                      key={park.id}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        flyToPark(park);
+                        setSearch(park.nameEn);
+                        setSearchOpen(false);
+                      }}
+                      className="flex w-full flex-col px-3 py-2 text-left hover:bg-mist transition"
+                    >
+                      <span className="text-sm font-semibold text-ink">{park.nameEn}</span>
+                      <span className="text-xs text-ink/50">{park.nameTh}{park.district ? ` · ${park.district}` : ""}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Filter toggle button */}
+            <button
+              onClick={() => setFilterOpen((v) => !v)}
+              className="mb-3 flex w-full items-center justify-between rounded-xl border border-ink/10 bg-mist px-3 py-2 text-sm font-semibold text-ink transition hover:bg-field"
+            >
+              <span>
+                🎛 Filters
+                {(selectedDistrict || selectedCategories.size > 0) && (
+                  <span className="ml-2 rounded-full bg-canopy px-2 py-0.5 text-xs font-bold text-white">
+                    {(selectedDistrict ? 1 : 0) + selectedCategories.size}
+                  </span>
+                )}
+              </span>
+              <span className="text-ink/40">{filterOpen ? "▲" : "▼"}</span>
+            </button>
+
+            {/* Collapsible filter panel */}
+            {filterOpen && (
+              <div className="mb-3 rounded-xl border border-ink/8 bg-mist/60 p-3">
+                <div className="mb-3">
+                  <p className="mb-1.5 text-xs font-semibold text-ink/50">Area (District)</p>
+                  <select
+                    value={selectedDistrict}
+                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                    className="w-full rounded-xl border border-ink/10 bg-white px-3 py-2 text-sm outline-none focus:border-canopy"
+                  >
+                    <option value="">All districts</option>
+                    {allDistricts.map(({ name, count }) => (
+                      <option key={name} value={name}>{name} ({count})</option>
+                    ))}
+                  </select>
+                </div>
+                {categoryGroups.length > 0 && (
+                  <div className="space-y-3">
+                    {categoryGroups.map((group) => (
+                      <div key={group.title}>
+                        <p className="mb-1 text-xs font-bold text-ink/40 uppercase tracking-wide">{group.title}</p>
+                        <div className="space-y-0.5">
+                          {group.items.map((c) => {
+                            const active = selectedCategories.has(c.label);
+                            return (
+                              <label key={c.label} className="flex cursor-pointer items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-white">
+                                <input type="checkbox" checked={active} onChange={() => toggleCategory(c.label)} className="accent-canopy h-3.5 w-3.5 shrink-0" />
+                                <span className="text-base leading-none">{c.icon}</span>
+                                <span className="flex-1 text-sm text-ink">{c.label}</span>
+                                <span className="rounded-full bg-ink/8 px-2 py-0.5 text-xs font-semibold text-ink/50">{c.count}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 3 Nearest parks */}
             <div className="border-t border-ink/8 pt-4">
               <p className="mb-2 text-xs font-bold text-ink/40 uppercase tracking-wide">
                 Nearest Parks
@@ -395,17 +534,12 @@ export default function MapPage() {
               {!parksLoading && (
                 <div className="space-y-2">
                   {parksWithDistance.slice(0, 3).map((park) => (
-                    <button
-                      key={park.id}
-                      onClick={() => park.centroid && setFlyToCoords([...park.centroid] as [number, number])}
-                      className="w-full rounded-2xl border border-ink/8 bg-mist px-3 py-3 text-left transition hover:bg-field hover:shadow-sm"
-                    >
+                    <button key={park.id} onClick={() => flyToPark(park)}
+                      className="w-full rounded-2xl border border-ink/8 bg-mist px-3 py-3 text-left transition hover:bg-field hover:shadow-sm">
                       <div className="flex items-start justify-between gap-2">
                         <p className="text-sm font-semibold leading-snug text-ink">{park.nameEn}</p>
                         {park.distanceM !== null ? (
-                          <span className="shrink-0 rounded-full bg-canopy/15 px-2 py-0.5 text-xs font-semibold text-canopy">
-                            {fmtDist(park.distanceM)}
-                          </span>
+                          <span className="shrink-0 rounded-full bg-canopy/15 px-2 py-0.5 text-xs font-semibold text-canopy">{fmtDist(park.distanceM)}</span>
                         ) : (
                           <span className="shrink-0 rounded-full bg-ink/8 px-2 py-0.5 text-xs text-ink/40">—</span>
                         )}
@@ -414,16 +548,12 @@ export default function MapPage() {
                       {park.district && <p className="text-xs text-ink/40 mt-0.5">📍 {park.district}</p>}
                       {park.categories.length > 0 && (
                         <div className="mt-1.5 flex flex-wrap gap-1">
-                          {park.categories.map((c, i) => (
-                            <span key={i} title={c.label} className="text-sm">{c.icon}</span>
-                          ))}
+                          {park.categories.map((c, i) => <span key={i} title={c.label} className="text-sm">{c.icon}</span>)}
                         </div>
                       )}
                     </button>
                   ))}
-                  {parksWithDistance.length === 0 && (
-                    <p className="text-sm text-ink/40">No parks found nearby.</p>
-                  )}
+                  {parksWithDistance.length === 0 && <p className="text-sm text-ink/40">No parks found nearby.</p>}
                 </div>
               )}
             </div>
@@ -469,18 +599,13 @@ export default function MapPage() {
                 </button>
               ))}
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-ink/50">Sensor zones</span>
-              {[1, 2, 3].map((km) => (
-                <button key={km} onClick={() => setSensorBufferKm(km)}
-                  className={`rounded-full px-2.5 py-1 text-xs font-semibold transition ${sensorBufferKm === km ? "bg-amber-500 text-white" : "bg-mist text-ink hover:bg-field"}`}>
-                  {km} km
-                </button>
-              ))}
-            </div>
             <button onClick={() => setShowSensorBuffers((v) => !v)}
               className={`rounded-full px-3 py-1 text-xs font-semibold transition ${showSensorBuffers ? "bg-amber-500 text-white" : "bg-mist text-ink hover:bg-field"}`}>
               {showSensorBuffers ? "Hide zones" : "Show zones"}
+            </button>
+            <button onClick={() => setShowChoropleth((v) => !v)}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${showChoropleth ? "bg-purple-500 text-white" : "bg-mist text-ink hover:bg-field"}`}>
+              {showChoropleth ? "Hide AQI map" : "District AQI"}
             </button>
             <div className="flex gap-1 rounded-full border border-ink/10 bg-mist p-1">
               {(["satellite", "street"] as Basemap[]).map((b) => (
@@ -516,12 +641,14 @@ export default function MapPage() {
               visibleParkIds={hasActiveFilters ? new Set(filteredParks.map((p) => p.id)) : null}
               stations={stations}
               bufferKm={bufferKm}
-              sensorBufferKm={sensorBufferKm}
               basemap={basemap}
               showSensorBuffers={showSensorBuffers}
               flyToCoords={flyToCoords}
+              openParkId={openParkId?.id ?? null}
+              openParkTick={openParkId?.tick ?? 0}
               userPm25={airQuality?.pm25 ?? null}
               activityMaxPm25={null}
+              showChoropleth={showChoropleth}
             />
           </div>
         </div>
