@@ -79,7 +79,6 @@ export default function FullscreenMapPage() {
   const [safety, setSafety]               = useState<SafetyInfo>(getSafetyInfo(null));
   const [enrichedParks, setEnrichedParks] = useState<EnrichedPark[]>([]);
   const [stations, setStations]           = useState<Pm25Station[]>([]);
-  const [bufferKm, setBufferKm]           = useState(2);
   const [basemap, setBasemap]             = useState<Basemap>("satellite");
   const [showSensorBuffers, setShowSensorBuffers] = useState(true);
   const [showChoropleth, setShowChoropleth] = useState(false);
@@ -140,15 +139,41 @@ export default function FullscreenMapPage() {
     })).filter((g) => g.items.length > 0);
   }, [enrichedParks]);
 
-  const parksWithDistance = useMemo(() =>
-    enrichedParks.filter((p) => p.centroid).map((p) => ({
-      ...p,
-      distanceM: userCoords ? haversineM(userCoords[0], userCoords[1], p.centroid![0], p.centroid![1]) : null,
-    })).sort((a, b) => (a.distanceM ?? Infinity) - (b.distanceM ?? Infinity)),
-  [enrichedParks, userCoords]);
+  const [bestParks, setBestParks] = useState<Array<EnrichedPark & { distanceM: number; pm25: number | null }> | null>(null);
+  const [bestLoading, setBestLoading] = useState(false);
+  const [pinDropCoords, setPinDropCoords] = useState<[number, number] | null>(null);
+
+  function handlePinDrop(lat: number, lng: number) {
+    const coords: [number, number] = [lat, lng];
+    setPinDropCoords(coords);
+    if (bestParks !== null) findBestParks(coords);
+  }
+
+  function findBestParks(fromCoords?: [number, number]) {
+    const origin = fromCoords ?? pinDropCoords ?? userCoords;
+    if (!origin) return;
+    setBestLoading(true);
+    setBestParks(null);
+    const [uLat, uLng] = origin;
+    const candidates = enrichedParks
+      .filter((p) => p.centroid)
+      .map((p) => {
+        const distanceM = haversineM(uLat, uLng, p.centroid![0], p.centroid![1]);
+        const result = idwPm25(p.centroid![0], p.centroid![1], stations, 40);
+        const pm25 = result?.pm25 ?? null;
+        const distKm = distanceM / 1000;
+        const score = pm25 !== null && distKm > 0 ? (1 / distKm) * (1 / pm25) : 0;
+        return { ...p, distanceM, pm25, score };
+      })
+      .filter((p) => p.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+    setBestParks(candidates);
+    setBestLoading(false);
+  }
 
   const filteredParks = useMemo(() =>
-    parksWithDistance.filter((p) => {
+    enrichedParks.filter((p) => {
       if (search.trim() && !p.nameEn.toLowerCase().includes(search.toLowerCase()) && !p.nameTh.includes(search)) return false;
       if (selectedDistrict && p.district !== selectedDistrict) return false;
       if (selectedCategories.size > 0) {
@@ -157,7 +182,7 @@ export default function FullscreenMapPage() {
       }
       return true;
     }),
-  [parksWithDistance, search, selectedDistrict, selectedCategories]);
+  [enrichedParks, search, selectedDistrict, selectedCategories]);
 
   const searchSuggestions = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -192,7 +217,6 @@ export default function FullscreenMapPage() {
           enrichedParks={enrichedParks}
           visibleParkIds={visibleParkIds}
           stations={stations}
-          bufferKm={bufferKm}
           basemap={basemap}
           showSensorBuffers={showSensorBuffers}
           flyToCoords={flyToCoords}
@@ -202,6 +226,7 @@ export default function FullscreenMapPage() {
           userPm25={airQuality?.pm25 ?? null}
           activityMaxPm25={null}
           showChoropleth={showChoropleth}
+          onPinDrop={handlePinDrop}
         />
       </div>
 
@@ -291,7 +316,7 @@ export default function FullscreenMapPage() {
           }}>
             <span style={{ fontWeight: 700, fontSize: 13, color: "#15803d" }}>🔍 Filter &amp; Controls</span>
             <span style={{ fontSize: 11, color: "#9ca3af" }}>
-              {filteredParks.length}/{parksWithDistance.length}
+              {filteredParks.length}/{enrichedParks.length}
               {hasActiveFilters && (
                 <button onClick={clearFilters} style={{ background: "none", border: "none", color: "#ef4444", fontSize: 11, fontWeight: 700, cursor: "pointer", marginLeft: 6 }}>Clear</button>
               )}
@@ -381,12 +406,6 @@ export default function FullscreenMapPage() {
 
             <div style={{ borderTop: "1px solid #f3f4f6", margin: "8px 0" }} />
 
-            {/* Map Controls */}
-            <span style={secLabel}>Your Radius</span>
-            <div style={{ display: "flex", gap: 5, marginBottom: 8, flexWrap: "wrap" }}>
-              {[1, 2, 3].map((km) => <button key={km} onClick={() => setBufferKm(km)} style={chip(bufferKm === km, "#3b82f6")}>{km} km</button>)}
-            </div>
-
             <span style={secLabel}>Sensor Zones</span>
             <div style={{ display: "flex", gap: 5, marginBottom: 8, flexWrap: "wrap" }}>
               <button onClick={() => setShowSensorBuffers((v) => !v)} style={chip(showSensorBuffers, "#f59e0b")}>
@@ -411,27 +430,64 @@ export default function FullscreenMapPage() {
               ))}
             </div>
 
-            {/* Nearest Parks */}
-            {parksWithDistance.length > 0 && (
-              <>
-                <div style={{ borderTop: "1px solid #f3f4f6", margin: "8px 0" }} />
-                <span style={secLabel}>Nearest Parks</span>
-                {parksWithDistance.slice(0, 3).map((park) => (
-                  <button
-                    key={park.id}
-                    onClick={() => flyToPark(park)}
-                    style={{ width: "100%", textAlign: "left", background: "#f9fafb", border: "1px solid #f3f4f6", borderRadius: 10, padding: "7px 10px", marginBottom: 5, cursor: "pointer" }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: 6, marginBottom: 1 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "#111827" }}>{park.nameEn}</span>
-                      {park.distanceM !== null && (
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#15803d", background: "#dcfce7", borderRadius: 999, padding: "1px 7px", whiteSpace: "nowrap" }}>{fmtDist(park.distanceM)}</span>
-                      )}
+            {/* Best Park For Me */}
+            <div style={{ borderTop: "1px solid #f3f4f6", margin: "8px 0" }} />
+            <button
+              onClick={() => findBestParks()}
+              disabled={(!userCoords && !pinDropCoords) || stations.length === 0}
+              style={{
+                width: "100%", borderRadius: 12, padding: "9px 12px", fontSize: 12, fontWeight: 700,
+                color: "white", border: "none", cursor: "pointer", marginBottom: 4,
+                background: "#15803d",
+                opacity: ((!userCoords && !pinDropCoords) || stations.length === 0) ? 0.4 : 1,
+              }}
+            >
+              {bestLoading ? "Finding…" : "🎯 Find Best Park For Me"}
+            </button>
+            {pinDropCoords && (
+              <p style={{ fontSize: 10, color: "#9ca3af", textAlign: "center", marginBottom: 8 }}>
+                📍 Based on dropped pin · drop a new pin to recalculate
+              </p>
+            )}
+
+            {bestParks !== null && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 9, fontWeight: 800, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.07em" }}>Top Recommendations</span>
+                  <button onClick={() => setBestParks(null)} style={{ background: "none", border: "none", fontSize: 10, color: "#9ca3af", cursor: "pointer", fontWeight: 700 }}>✕ Clear</button>
+                </div>
+                {bestParks.length === 0 && (
+                  <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center" }}>No results — enable location or wait for air data.</p>
+                )}
+                {bestParks.map((park, i) => {
+                  const s = getSafetyInfo(park.pm25);
+                  const aqi = park.pm25 !== null ? pm25ToAqi(park.pm25) : null;
+                  return (
+                    <div key={park.id} style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: "8px 10px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 6, marginBottom: 4 }}>
+                        <div>
+                          <span style={{ fontSize: 12, marginRight: 4 }}>{i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "#111827" }}>{park.nameEn}</span>
+                          {park.district && <p style={{ fontSize: 10, color: "#9ca3af", margin: "2px 0 0" }}>📍 {park.district}</p>}
+                          <p style={{ fontSize: 10, color: "#6b7280", margin: "2px 0 0" }}>📏 {fmtDist(park.distanceM)}</p>
+                        </div>
+                        {aqi !== null && (
+                          <div style={{ background: s.color, borderRadius: 8, padding: "4px 8px", textAlign: "center", flexShrink: 0 }}>
+                            <div style={{ color: "white", fontWeight: 800, fontSize: 14, lineHeight: 1 }}>{aqi}</div>
+                            <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 9 }}>AQI</div>
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => flyToPark(park)}
+                        style={{ width: "100%", background: "#15803d", color: "white", borderRadius: 8, padding: "5px 10px", fontSize: 11, fontWeight: 700, border: "none", cursor: "pointer" }}
+                      >
+                        View on Map →
+                      </button>
                     </div>
-                    {park.district && <p style={{ fontSize: 10, color: "#9ca3af", margin: 0 }}>📍 {park.district}</p>}
-                  </button>
-                ))}
-              </>
+                  );
+                })}
+              </div>
             )}
           </div>
         </div>

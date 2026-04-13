@@ -62,7 +62,6 @@ export default function MapPage() {
   const [stations, setStations]               = useState<Pm25Station[]>([]);
   const [parksLoading, setParksLoading]       = useState(true);
   const [stationsLoading, setStationsLoading] = useState(true);
-  const [bufferKm, setBufferKm]               = useState(2);
   const [basemap, setBasemap]                 = useState<Basemap>("satellite");
   const [showSensorBuffers, setShowSensorBuffers] = useState(true);
   const [flyToCoords, setFlyToCoords]         = useState<[number, number] | null>(null);
@@ -74,6 +73,7 @@ export default function MapPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [bestParks, setBestParks] = useState<Array<EnrichedPark & { distanceM: number; pm25: number | null }> | null>(null);
   const [bestLoading, setBestLoading] = useState(false);
+  const [pinDropCoords, setPinDropCoords] = useState<[number, number] | null>(null);
   const [showChoropleth, setShowChoropleth] = useState(false);
   const searchParams = useSearchParams();
   const parkIdParam = searchParams.get("parkId");
@@ -241,11 +241,18 @@ export default function MapPage() {
     setOpenParkId((prev) => ({ id: park.id, tick: (prev?.tick ?? 0) + 1 }));
   }
 
-  function findBestParks() {
-    if (!userCoords) return;
+  function handlePinDrop(lat: number, lng: number) {
+    const coords: [number, number] = [lat, lng];
+    setPinDropCoords(coords);
+    if (bestParks !== null) findBestParks(coords);
+  }
+
+  function findBestParks(fromCoords?: [number, number]) {
+    const origin = fromCoords ?? pinDropCoords ?? userCoords;
+    if (!origin) return;
     setBestLoading(true);
     setBestParks(null);
-    const [uLat, uLng] = userCoords;
+    const [uLat, uLng] = origin;
     const candidates = enrichedParks
       .filter((p) => p.centroid)
       .map((p) => {
@@ -363,71 +370,6 @@ export default function MapPage() {
               )}
             </div>
 
-            {/* ── Best Park For Me ── */}
-            <button
-              onClick={() => bestParks !== null ? setBestParks(null) : findBestParks()}
-              disabled={!userCoords || parksLoading || stations.length === 0}
-              className={`mb-3 w-full rounded-2xl px-4 py-3 text-sm font-bold text-white shadow-sm transition disabled:opacity-40 disabled:cursor-not-allowed ${bestParks !== null ? "bg-ink/70 hover:bg-ink/60" : "bg-canopy hover:bg-canopy/90"}`}
-            >
-              {bestLoading ? "Finding…" : bestParks !== null ? "✕ Close Recommendations" : "🎯 Find Best Park For Me"}
-            </button>
-
-            {/* Best park results */}
-            {bestParks !== null && (
-              <div className="mb-3 space-y-2">
-                {bestParks.length === 0 && (
-                  <p className="text-xs text-ink/40 text-center py-2">No results — try enabling location or waiting for air data.</p>
-                )}
-                {bestParks.map((park, i) => {
-                  const safety = getSafetyInfo(park.pm25);
-                  const aqi = park.pm25 !== null ? pm25ToAqi(park.pm25) : null;
-                  const actLabel =
-                    park.pm25 === null ? "No data"
-                    : park.pm25 <= 25  ? "Safe to run"
-                    : park.pm25 <= 50  ? "Light activity"
-                    : park.pm25 <= 100 ? "Wear mask"
-                    : "Avoid outdoors";
-                  return (
-                    <div key={park.id} className="rounded-2xl border border-canopy/20 bg-canopy/5 p-3">
-                      <div className="mb-1.5 flex items-start justify-between gap-2">
-                        <div>
-                          <span className="mr-1.5 text-xs font-black text-canopy/60">
-                            {i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}
-                          </span>
-                          <span className="text-sm font-bold text-ink">{park.nameEn}</span>
-                          <p className="text-xs text-ink/40">{park.nameTh}</p>
-                        </div>
-                        {aqi !== null && (
-                          <div className="flex shrink-0 flex-col items-center rounded-xl px-2.5 py-1.5 text-white" style={{ backgroundColor: safety.color }}>
-                            <span className="text-base font-black leading-none">{aqi}</span>
-                            <span className="text-xs opacity-80">AQI</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-1.5 text-xs text-ink/60 mb-2">
-                        <span>📍 {fmtDist(park.distanceM)}</span>
-                        {park.openHours && <span>🕐 {park.openHours}</span>}
-                        <span style={{ color: safety.color }} className="font-semibold">{actLabel}</span>
-                      </div>
-                      {park.categories.length > 0 && (
-                        <div className="mb-2 flex flex-wrap gap-1">
-                          {park.categories.map((c, ci) => (
-                            <span key={ci} title={c.label} className="rounded-md bg-white px-1.5 py-0.5 text-xs border border-ink/8">{c.icon} {c.label}</span>
-                          ))}
-                        </div>
-                      )}
-                      <button
-                        onClick={() => flyToPark(park)}
-                        className="w-full rounded-xl bg-canopy px-3 py-1.5 text-xs font-bold text-white transition hover:bg-canopy/90"
-                      >
-                        View on Map →
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
             {/* Search autocomplete */}
             <div className="relative mb-3">
               <input
@@ -524,36 +466,81 @@ export default function MapPage() {
               </div>
             )}
 
-            {/* 3 Nearest parks */}
-            <div className="border-t border-ink/8 pt-4">
-              <p className="mb-2 text-xs font-bold text-ink/40 uppercase tracking-wide">
-                Nearest Parks
-                {!userCoords && <span className="ml-1 font-normal normal-case text-ink/30">· enable location</span>}
-              </p>
-              {parksLoading && <p className="text-sm text-ink/40">Loading…</p>}
-              {!parksLoading && (
-                <div className="space-y-2">
-                  {parksWithDistance.slice(0, 3).map((park) => (
-                    <button key={park.id} onClick={() => flyToPark(park)}
-                      className="w-full rounded-2xl border border-ink/8 bg-mist px-3 py-3 text-left transition hover:bg-field hover:shadow-sm">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-semibold leading-snug text-ink">{park.nameEn}</p>
-                        {park.distanceM !== null ? (
-                          <span className="shrink-0 rounded-full bg-canopy/15 px-2 py-0.5 text-xs font-semibold text-canopy">{fmtDist(park.distanceM)}</span>
-                        ) : (
-                          <span className="shrink-0 rounded-full bg-ink/8 px-2 py-0.5 text-xs text-ink/40">—</span>
+            {/* ── Best Park For Me ── */}
+            <div className="border-t border-ink/8 pt-3 mt-1">
+              <button
+                onClick={() => findBestParks()}
+                disabled={(!userCoords && !pinDropCoords) || parksLoading || stations.length === 0}
+                className="w-full rounded-2xl bg-canopy px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-canopy/90 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {bestLoading ? "Finding…" : "🎯 Find Best Park For Me"}
+              </button>
+              {pinDropCoords && (
+                <p className="mt-1.5 text-center text-xs text-ink/40">📍 Based on your dropped pin · drop a new pin to recalculate</p>
+              )}
+
+              {bestParks !== null && (
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs font-bold text-ink/40 uppercase tracking-wide">Top Recommendations</p>
+                    <button onClick={() => setBestParks(null)} className="text-xs font-semibold text-ink/30 hover:text-red-400 transition">✕ Clear</button>
+                  </div>
+                  {bestParks.length === 0 && (
+                    <p className="text-xs text-ink/40 text-center py-2">No results — try enabling location or waiting for air data.</p>
+                  )}
+                  {bestParks.map((park, i) => {
+                    const safety = getSafetyInfo(park.pm25);
+                    const aqi = park.pm25 !== null ? pm25ToAqi(park.pm25) : null;
+                    const actLabel =
+                      park.pm25 === null ? "No data"
+                      : park.pm25 <= 25  ? "Safe to run"
+                      : park.pm25 <= 50  ? "Light activity"
+                      : park.pm25 <= 100 ? "Wear mask"
+                      : "Avoid outdoors";
+                    return (
+                      <div key={park.id} className={`rounded-2xl p-3 ${i === 0 ? "border-2 border-canopy bg-canopy/8" : "border border-canopy/20 bg-canopy/5"}`}>
+                        {i === 0 && (
+                          <div className="mb-2 flex items-center gap-1.5 rounded-xl bg-canopy px-3 py-1.5">
+                            <span className="text-sm">✅</span>
+                            <span className="text-xs font-black text-white">We suggest this one — go here today!</span>
+                          </div>
                         )}
-                      </div>
-                      {park.nameTh && <p className="text-xs text-ink/50 mt-0.5">{park.nameTh}</p>}
-                      {park.district && <p className="text-xs text-ink/40 mt-0.5">📍 {park.district}</p>}
-                      {park.categories.length > 0 && (
-                        <div className="mt-1.5 flex flex-wrap gap-1">
-                          {park.categories.map((c, i) => <span key={i} title={c.label} className="text-sm">{c.icon}</span>)}
+                        <div className="mb-1.5 flex items-start justify-between gap-2">
+                          <div>
+                            <span className="mr-1.5 text-xs font-black text-canopy/60">
+                              {i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}
+                            </span>
+                            <span className="text-sm font-bold text-ink">{park.nameEn}</span>
+                            <p className="text-xs text-ink/40">{park.nameTh}</p>
+                          </div>
+                          {aqi !== null && (
+                            <div className="flex shrink-0 flex-col items-center rounded-xl px-2.5 py-1.5 text-white" style={{ backgroundColor: safety.color }}>
+                              <span className="text-base font-black leading-none">{aqi}</span>
+                              <span className="text-xs opacity-80">AQI</span>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </button>
-                  ))}
-                  {parksWithDistance.length === 0 && <p className="text-sm text-ink/40">No parks found nearby.</p>}
+                        <div className="flex flex-wrap gap-1.5 text-xs text-ink/60 mb-2">
+                          <span>📍 {fmtDist(park.distanceM)}</span>
+                          {park.openHours && <span>🕐 {park.openHours}</span>}
+                          <span style={{ color: safety.color }} className="font-semibold">{actLabel}</span>
+                        </div>
+                        {park.categories.length > 0 && (
+                          <div className="mb-2 flex flex-wrap gap-1">
+                            {park.categories.map((c, ci) => (
+                              <span key={ci} title={c.label} className="rounded-md bg-white px-1.5 py-0.5 text-xs border border-ink/8">{c.icon} {c.label}</span>
+                            ))}
+                          </div>
+                        )}
+                        <button
+                          onClick={() => flyToPark(park)}
+                          className="w-full rounded-xl bg-canopy px-3 py-1.5 text-xs font-bold text-white transition hover:bg-canopy/90"
+                        >
+                          View on Map →
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -590,15 +577,6 @@ export default function MapPage() {
               {stationsLoading ? "Loading sensors…" : `${stations.length} sensors`}
               {" · Click map to drop a pin"}
             </p>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-ink/50">Your radius</span>
-              {[1, 2, 3].map((km) => (
-                <button key={km} onClick={() => setBufferKm(km)}
-                  className={`rounded-full px-2.5 py-1 text-xs font-semibold transition ${bufferKm === km ? "bg-blue-500 text-white" : "bg-mist text-ink hover:bg-field"}`}>
-                  {km} km
-                </button>
-              ))}
-            </div>
             <button onClick={() => setShowSensorBuffers((v) => !v)}
               className={`rounded-full px-3 py-1 text-xs font-semibold transition ${showSensorBuffers ? "bg-amber-500 text-white" : "bg-mist text-ink hover:bg-field"}`}>
               {showSensorBuffers ? "Hide zones" : "Show zones"}
@@ -640,7 +618,6 @@ export default function MapPage() {
               enrichedParks={enrichedParks}
               visibleParkIds={hasActiveFilters ? new Set(filteredParks.map((p) => p.id)) : null}
               stations={stations}
-              bufferKm={bufferKm}
               basemap={basemap}
               showSensorBuffers={showSensorBuffers}
               flyToCoords={flyToCoords}
@@ -649,6 +626,7 @@ export default function MapPage() {
               userPm25={airQuality?.pm25 ?? null}
               activityMaxPm25={null}
               showChoropleth={showChoropleth}
+              onPinDrop={handlePinDrop}
             />
           </div>
         </div>

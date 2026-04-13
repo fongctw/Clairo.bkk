@@ -269,7 +269,6 @@ export interface MapViewProps {
   enrichedParks: EnrichedPark[];
   visibleParkIds: Set<number> | null;
   stations: Pm25Station[];
-  bufferKm: number;
   basemap: "satellite" | "street";
   showSensorBuffers: boolean;
   flyToCoords: [number, number] | null;
@@ -278,6 +277,8 @@ export interface MapViewProps {
   userPm25: number | null;
   activityMaxPm25: number | null;
   showChoropleth?: boolean;
+  /** Called when the user drops a pin on the map */
+  onPinDrop?: (lat: number, lng: number) => void;
   /** Extra right-side padding (px) so popup auto-pan clears any overlay panel */
   panelPaddingRight?: number;
 }
@@ -383,7 +384,7 @@ function overpassRelationsToGeoJSON(elements: any[]): GeoJSON.FeatureCollection 
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, bufferKm, basemap, showSensorBuffers, flyToCoords, openParkId, openParkTick, userPm25, activityMaxPm25, showChoropleth = false, panelPaddingRight = 0 }: MapViewProps) {
+export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, basemap, showSensorBuffers, flyToCoords, openParkId, openParkTick, userPm25, activityMaxPm25, showChoropleth = false, onPinDrop, panelPaddingRight = 0 }: MapViewProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [droppedPin, setDroppedPin] = useState<[number, number] | null>(null);
   const [droppedPinSafety, setDroppedPinSafety] = useState<SafetyInfo | null>(null);
@@ -464,6 +465,7 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
   function handlePinDrop(lat: number, lng: number) {
     setDroppedPin([lat, lng]);
     setDroppedPinMeta(null);
+    onPinDrop?.(lat, lng);
 
     const result = idwPm25(lat, lng, stations);
     if (result) {
@@ -682,11 +684,6 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
               `) }} />
             </Popup>
           </Marker>
-          <Circle
-            center={userCoords}
-            radius={bufferKm * 1000}
-            pathOptions={{ color: "#3b82f6", fillColor: "#3b82f6", fillOpacity: 0.06, weight: 2, dashArray: "6 4" }}
-          />
         </>
       )}
 

@@ -145,7 +145,7 @@ export default function RankingPage() {
               <div
                 key={park.id}
                 onClick={() => router.push(`/map?parkId=${park.id}`)}
-                className="flex cursor-pointer items-center gap-4 rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-sm transition hover:shadow-md hover:border-canopy/40"
+                className={`flex cursor-pointer items-center gap-4 rounded-2xl px-4 py-3 shadow-sm transition hover:shadow-md ${rankNum === 1 && sortKey === "aqi" && park.pm25 !== null ? "border-2 border-canopy bg-canopy/5 hover:border-canopy" : "border border-white/60 bg-white/90 hover:border-canopy/40"}`}
               >
                 {/* Park image with rank overlaid — LEFT */}
                 <div className="relative shrink-0 overflow-hidden rounded-xl" style={{ width: 80, height: 64 }}>
@@ -165,9 +165,19 @@ export default function RankingPage() {
 
                 {/* Name + district */}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-ink">{park.nameEn}</p>
+                  <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+                    <p className="truncate font-semibold text-ink">{park.nameEn}</p>
+                    {rankNum === 1 && sortKey === "aqi" && park.pm25 !== null && (
+                      <span className="shrink-0 rounded-full bg-canopy px-2 py-0.5 text-xs font-black text-white">
+                        ✅ Go here today!
+                      </span>
+                    )}
+                  </div>
                   <p className="truncate text-xs text-ink/40">{park.nameTh}</p>
                   {park.district && <p className="truncate text-xs text-ink/30">📍 {park.district}</p>}
+                  {rankNum === 1 && sortKey === "aqi" && park.pm25 !== null && (
+                    <p className="text-xs font-medium text-canopy/80 mt-0.5">Cleanest air in Bangkok right now</p>
+                  )}
                 </div>
 
                 {/* Activity label — hidden on small screens */}
