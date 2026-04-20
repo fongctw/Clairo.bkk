@@ -424,49 +424,6 @@ export function idwPm25(lat: number, lng: number, stations: Pm25Station[], maxKm
   }
 }
 
-// ─── Historical PM2.5 — Open-Meteo Air Quality API (free, no key) ────────────
-// Returns daily average PM2.5 for the past 7 days at a given location
-// Source: CAMS European air quality reanalysis model
-
-export interface Pm25Day {
-  date: string   // e.g. "Mon 31 Mar"
-  pm25: number   // daily average µg/m³
-}
-
-export const fetchPm25History = async (lat: number, lng: number): Promise<Pm25Day[]> => {
-  try {
-    const res = await fetch(
-      `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lng}&hourly=pm2_5&past_days=7&forecast_days=1&timezone=Asia%2FBangkok`
-    )
-    if (!res.ok) return []
-    const data = await res.json()
-    const times: string[]  = data.hourly?.time  ?? []
-    const values: number[] = data.hourly?.pm2_5 ?? []
-
-    // Group hourly values by date, compute daily average
-    const byDate: Record<string, number[]> = {}
-    times.forEach((t, i) => {
-      if (values[i] === null || values[i] === undefined) return
-      const date = t.split('T')[0]  // "2024-04-01"
-      if (!byDate[date]) byDate[date] = []
-      byDate[date].push(values[i])
-    })
-
-    return Object.entries(byDate)
-      .slice(0, 7)  // last 7 days only
-      .map(([dateStr, vals]) => {
-        const avg = vals.reduce((s, v) => s + v, 0) / vals.length
-        const dt = new Date(dateStr + 'T12:00:00+07:00')
-        return {
-          date: dt.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }),
-          pm25: Math.round(avg * 10) / 10,
-        }
-      })
-  } catch {
-    return []
-  }
-}
-
 // ─── Reverse geocoding ────────────────────────────────────────────────────────
 
 export const reverseGeocode = async (lat: number, lng: number): Promise<LocationData> => {
