@@ -1,65 +1,98 @@
 # Green & Clean Bangkok Finder
 
-Green & Clean Bangkok Finder is a full-stack GIS decision-support web app for identifying relatively greener and lower-pollution areas in Bangkok and nearby provinces. It combines greenness, PM2.5 interpolation, and distance from pollution sources into a configurable spatial suitability score.
+Green & Clean Bangkok Finder is currently a frontend-only Next.js app for exploring Bangkok public parks with live air-quality context.
 
-This project is designed for a Location-Based Services / GIS academic mini-project. It runs locally with mock Bangkok-area datasets and is structured so real Thailand datasets can be added later without changing the application architecture.
+The app focuses on helping users find parks that are both nearby and relatively cleaner right now by combining:
 
-## What the app does
+- live PM2.5 / AQI readings from WAQI
+- browser geolocation
+- inverse-distance weighted (IDW) interpolation between nearby sensor stations
+- Bangkok park metadata, categories, images, and map geometry
 
-- Displays an interactive map centered on Bangkok
-- Toggles NDVI, PM2.5, green spaces, pollution sources, and suitability layers
-- Runs a weighted suitability analysis:
-  - Greenness: 45%
-  - PM2.5: 35%
-  - Distance from pollution sources: 20%
-- Returns ranked clean-and-green candidate areas
-- Exports results as GeoJSON and CSV
-- Includes methodology, datasets, and limitations pages
+## Current status
 
-## Important limitations
+This repository does not currently include an active backend.
 
-- The app identifies relatively greener and lower-pollution areas, not zero-pollution areas.
-- PM2.5 varies over time and can change quickly.
-- Greenness does not always mean public accessibility.
-- PM2.5 interpolation is an estimate and depends on station coverage.
-- Mock data is included for local demonstration and should be replaced for real-world use.
+The old README described a FastAPI backend, GIS processing pipeline, Docker setup, and `backend/` / `data/` folders. Those are not present in the current project structure. The app now works by calling public APIs directly from the frontend and loading local static files from `frontend/public/`.
 
-## Architecture
+## Features
 
-- Frontend: Next.js 14, TypeScript, Tailwind CSS, React Leaflet, Recharts
-- Backend: FastAPI, Pydantic, GeoPandas, Rasterio, Shapely, NumPy, Pandas
-- Data mode: Local file-based processing with mock fallbacks
-- Containerization: Docker and docker-compose
+- interactive Bangkok map with street and satellite basemaps
+- live PM2.5-based safety display for the user’s current location
+- park markers with popup cards, park details, and directions links
+- park ranking page sorted by interpolated air quality
+- search, district filters, and amenity/category filters
+- fullscreen map mode
+- weather and short forecast support when an OpenWeather key is provided
+- reverse geocoding for the user’s detected location
+
+## Tech stack
+
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS
+- React Leaflet / Leaflet
+- Vitest + Testing Library
 
 ## Project structure
 
 ```text
-frontend/                Next.js application
-backend/                 FastAPI API and analysis pipeline
-data/
-  boundaries/            Study area files
-  green_spaces/          Parks and open space files
-  pollution/             Pollution source files
-  pm25/                  PM2.5 station CSV files
-  rasters/               NDVI rasters or raster placeholders
-  output/                Generated exports
-scripts/                 Data preparation and pipeline helpers
-docs/                    Project report support docs
+README.md
+scripts/
+  add-featured-parks.py
+frontend/
+  app/                  Next.js app routes
+  components/           UI and map components
+  lib/                  API helpers, interpolation, park metadata
+  public/               local GeoJSON / JSON assets and images
+  package.json
 ```
 
-## Local setup
+## Main routes
 
-### 1. Backend
+- `/map` — main map experience
+- `/map/fullscreen` — fullscreen map view
+- `/ranking` — park ranking by interpolated PM2.5
+- `/about` — project limitations and future ideas
+
+The home route `/` redirects to `/map`.
+
+## Data and API sources
+
+The current app uses a mix of live APIs and local static assets:
+
+- WAQI / AQICN API for air quality and sensor map data
+- OpenWeather API for current weather and short forecast
+- Open-Meteo air quality API for historical PM2.5 helper data
+- OpenStreetMap Nominatim for reverse geocoding
+- local files in `frontend/public/` such as:
+  - `park.geojson`
+  - `parks_clean.json`
+  - `clairo-logo.png`
+
+Park enrichment is assembled in the frontend from:
+
+- BMA park metadata in [frontend/lib/bma-parks-meta.ts](/Users/chaitawatboonkitticharoen/Documents/year 3/term2/lbs/Green & Clean Bangkok Finder/frontend/lib/bma-parks-meta.ts)
+- local park geometry from `frontend/public/park.geojson`
+- live air-quality station data
+
+## Environment variables
+
+Create `frontend/.env.local` if you want live API access:
 
 ```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+NEXT_PUBLIC_AQICN_TOKEN=your_waqi_token
+NEXT_PUBLIC_OWM_KEY=your_openweathermap_key
 ```
 
-### 2. Frontend
+Notes:
+
+- `NEXT_PUBLIC_AQICN_TOKEN` is effectively required for live PM2.5 and station data.
+- `NEXT_PUBLIC_OWM_KEY` is optional. Without it, weather and forecast sections will return empty data.
+- Because these are `NEXT_PUBLIC_*` variables, they are exposed to the browser by design.
+
+## Local development
 
 ```bash
 cd frontend
@@ -67,91 +100,52 @@ npm install
 npm run dev
 ```
 
-### 3. Docker
+Then open [http://localhost:3000](http://localhost:3000).
+
+## Available scripts
+
+From `frontend/`:
 
 ```bash
-docker-compose up --build
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm run test
 ```
 
-Frontend: `http://localhost:3000`
-Backend docs: `http://localhost:8000/docs`
-
-## How mock data works
-
-The backend reads local files from `../data`. If raster or vector inputs are missing, it falls back to synthetic Bangkok-like sample data so the full analysis pipeline still runs.
-
-Included sample files:
-
-- `data/boundaries/bangkok_study_area.geojson`
-- `data/green_spaces/parks.geojson`
-- `data/pollution/pollution_sources.geojson`
-- `data/pm25/pm25_stations.csv`
-
-If no NDVI raster exists, the backend generates a synthetic NDVI surface inside the study area boundary.
-
-## Replacing mock data with real Bangkok datasets
-
-1. Put study area polygons in `data/boundaries/`
-2. Put parks or open-space polygons in `data/green_spaces/`
-3. Put pollution source points in `data/pollution/`
-4. Put PM2.5 station data in `data/pm25/`
-5. Put NDVI GeoTIFF rasters in `data/rasters/`
-6. Keep CRS metadata valid. The app standardizes layers to EPSG:32647 by default.
-7. Update file names or adjust loader settings in [backend/app/config/settings.py](/Users/chaitawatboonkitticharoen/Documents/year 3/term2/lbs/Green & Clean Bangkok Finder/backend/app/config/settings.py)
-
-Recommended future real sources:
-
-- Air4Thai / Pollution Control Department
-- GISTDA Open Data
-- Bangkok open urban datasets
-- ONEP / Thai Green Urban datasets
-- Industrial or factory source datasets
-
-## Scoring workflow
-
-1. Load and standardize all layers into a common CRS
-2. Clip them to the selected study area
-3. Interpolate PM2.5 using IDW
-4. Build a pollution-distance surface
-5. Normalize each factor to 0-100
-6. Combine factors with weighted overlay
-7. Classify output into:
-   - Very High
-   - High
-   - Moderate
-   - Low
-   - Very Low
-
-The scoring configuration is stored in [backend/app/config/scoring.py](/Users/chaitawatboonkitticharoen/Documents/year 3/term2/lbs/Green & Clean Bangkok Finder/backend/app/config/scoring.py).
-
-## Scripts
-
-- `scripts/generate_sample_data.py`
-- `scripts/validate_data.py`
-- `scripts/reproject_data.py`
-- `scripts/interpolate_pm25.py`
-- `scripts/calculate_suitability.py`
-- `scripts/export_outputs.py`
-
-## Testing
-
-Backend:
+Repository-level helper script:
 
 ```bash
-cd backend
-pytest
+python scripts/add-featured-parks.py
 ```
 
-Frontend:
+## How PM2.5 is calculated in the app
 
-```bash
-cd frontend
-npm test
-```
+The app does not run a server-side GIS pipeline right now.
 
-## Documentation
+Instead, it:
 
-- [docs/methodology.md](/Users/chaitawatboonkitticharoen/Documents/year 3/term2/lbs/Green & Clean Bangkok Finder/docs/methodology.md)
-- [docs/datasets.md](/Users/chaitawatboonkitticharoen/Documents/year 3/term2/lbs/Green & Clean Bangkok Finder/docs/datasets.md)
-- [docs/api.md](/Users/chaitawatboonkitticharoen/Documents/year 3/term2/lbs/Green & Clean Bangkok Finder/docs/api.md)
-- [docs/setup.md](/Users/chaitawatboonkitticharoen/Documents/year 3/term2/lbs/Green & Clean Bangkok Finder/docs/setup.md)
+1. loads live station readings from the WAQI bounds endpoint
+2. converts AQI-style readings into approximate PM2.5 values
+3. uses IDW interpolation in the frontend to estimate PM2.5 at park and user locations
+4. converts PM2.5 back to a US AQI-style display label for the UI
+
+The interpolation logic lives in [frontend/lib/api.ts](/Users/chaitawatboonkitticharoen/Documents/year 3/term2/lbs/Green & Clean Bangkok Finder/frontend/lib/api.ts).
+
+## Limitations
+
+- This app shows relative cleanliness, not pollution-free locations.
+- PM2.5 changes over time, sometimes quickly.
+- API availability and rate limits can affect results.
+- Missing API keys will reduce functionality.
+- Some park centroids fall back to manually provided coordinates when no polygon match is found.
+- Air quality values are interpolated estimates, not direct on-site sensor readings for every park.
+
+## Notes for future cleanup
+
+If you continue maintaining this project, the next README update should stay aligned with the actual repo state:
+
+- no backend should be documented unless a real `backend/` service is added back
+- no Docker instructions should be documented unless Docker files are restored
+- no nonexistent `docs/` or `data/` folders should be referenced
