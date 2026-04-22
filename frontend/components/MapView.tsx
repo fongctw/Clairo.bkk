@@ -281,6 +281,8 @@ export interface MapViewProps {
   onPinDrop?: (lat: number, lng: number) => void;
   /** Extra right-side padding (px) so popup auto-pan clears any overlay panel */
   panelPaddingRight?: number;
+  /** Increment to trigger map.invalidateSize() when surrounding layout changes */
+  layoutKey?: number;
 }
 
 // ─── FlyTo helper (reacts to prop changes) ────────────────────────────────────
@@ -290,6 +292,14 @@ function FlyTo({ coords }: { coords: [number, number] }) {
   useEffect(() => {
     map.flyTo(coords, 15, { animate: true, duration: 1 });
   }, [coords, map]);
+  return null;
+}
+
+// ─── Invalidate map size when surrounding layout changes ─────────────────────
+
+function InvalidateSize({ layoutKey }: { layoutKey?: number }) {
+  const map = useMap();
+  useEffect(() => { map.invalidateSize(); }, [layoutKey, map]);
   return null;
 }
 
@@ -384,7 +394,7 @@ function overpassRelationsToGeoJSON(elements: any[]): GeoJSON.FeatureCollection 
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, basemap, showSensorBuffers, flyToCoords, openParkId, openParkTick, userPm25, activityMaxPm25, showChoropleth = false, onPinDrop, panelPaddingRight = 0 }: MapViewProps) {
+export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, basemap, showSensorBuffers, flyToCoords, openParkId, openParkTick, userPm25, activityMaxPm25, showChoropleth = false, onPinDrop, panelPaddingRight = 0, layoutKey }: MapViewProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [droppedPin, setDroppedPin] = useState<[number, number] | null>(null);
   const [droppedPinSafety, setDroppedPinSafety] = useState<SafetyInfo | null>(null);
@@ -499,6 +509,7 @@ export function MapView({ userCoords, enrichedParks, visibleParkIds, stations, b
       scrollWheelZoom
       style={{ height: "100%", minHeight: 480, width: "100%", borderRadius: 24 }}
     >
+      <InvalidateSize layoutKey={layoutKey} />
       {userCoords && <FlyToUser coords={userCoords} />}
       {flyToCoords && <FlyTo coords={flyToCoords} />}
       {openParkId && <OpenParkPopup parkId={openParkId} tick={openParkTick ?? 0} panelPaddingRight={panelPaddingRight} markerRefs={parkMarkerRefs} />}

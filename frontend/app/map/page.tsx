@@ -627,6 +627,7 @@ export default function MapPage() {
               activityMaxPm25={null}
               showChoropleth={showChoropleth}
               onPinDrop={handlePinDrop}
+              layoutKey={bestParks !== null ? 1 : 0}
             />
           </div>
         </div>
